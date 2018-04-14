@@ -641,6 +641,8 @@ static int usbtiny_paged_load (PROGRAMMER * pgm, AVRPART * p, AVRMEM* m,
 
   for (; addr < maxaddr; addr += chunk) {
     chunk = PDATA(pgm)->chunk_size;         // start with the maximum chunk size possible
+    if (chunk > maxaddr - addr)
+      chunk = maxaddr - addr;
 
     // Send the chunk of data to the USBtiny with the function we want
     // to perform
@@ -696,6 +698,8 @@ static int usbtiny_paged_write(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
   for (; addr < maxaddr; addr += chunk) {
     // start with the max chunk size
     chunk = PDATA(pgm)->chunk_size;
+    if (chunk > maxaddr - addr)
+      chunk = maxaddr - addr;
 
     // we can only write a page at a time anyways
     if (m->paged && chunk > page_size)
