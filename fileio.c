@@ -1157,7 +1157,7 @@ static int fileio_ihex(struct fioparms * fio,
 
   switch (fio->op) {
     case FIO_WRITE:
-      rc = b2ihex(mem->buf, size, 32, fio->fileoffset, filename, f);
+      rc = b2ihex(mem->buf, size, 16, fio->fileoffset, filename, f);
       if (rc < 0) {
         return -1;
       }
