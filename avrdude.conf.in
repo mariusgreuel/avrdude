@@ -890,6 +890,15 @@ programmer
 ;
 
 programmer
+  id = "micronucleus";
+  desc = "Micronucleus Bootloader";
+  type = "micronucleus";
+  connection_type = usb;
+  usbvid = 0x16D0;
+  usbpid = 0x0753;
+;
+
+programmer
   id    = "butterfly";
   desc  = "Atmel Butterfly Development Board";
   type  = "butterfly";

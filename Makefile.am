@@ -151,6 +151,8 @@ libavrdude_a_SOURCES = \
 	linuxgpio.h \
 	linux_ppdev.h \
 	lists.c \
+	micronucleus.c \
+	micronucleus.h \
 	my_ddk_hidsdi.h \
 	par.c \
 	par.h \
