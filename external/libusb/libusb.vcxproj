@@ -23,13 +23,14 @@
     <ClCompile Include="src\error.c" />
     <ClCompile Include="src\registry.c" />
     <ClCompile Include="src\usb.c" />
-    <ClCompile Include="src\windows.c" />
+    <ClCompile Include="src\windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lusb0_usb.h" />
     <ClInclude Include="src\driver_api.h" />
     <ClInclude Include="src\error.h" />
     <ClInclude Include="src\libusb-win32_version.h" />
+    <ClInclude Include="src\libwinusb.h" />
     <ClInclude Include="src\registry.h" />
     <ClInclude Include="src\usbi.h" />
   </ItemGroup>
