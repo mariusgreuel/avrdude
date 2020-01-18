@@ -1,0 +1,67 @@
+.deps
+.libs
+autom4te.cache
+m4
+
+ac_cfg.h
+ac_cfg.h.in
+aclocal.m4
+avrdude
+avrdude.conf
+avrdude.conf.tmp
+avrdude.spec
+compile
+config.guess
+config.log
+config.status
+config.sub
+config_gram.c
+config_gram.h
+configure
+depcomp
+INSTALL
+install-sh
+lexer.c
+libtool
+ltmain.sh
+Makefile
+Makefile.in
+mdate-sh
+mkinstalldirs
+missing
+stamp-h.in
+stamp-h1
+texinfo.tex
+y.output
+y.tab.h
+ylwrap
+
+*.o
+*.lo
+*.a
+*.la
+*.diff
+*.patch
+
+## Ignore Visual Studio build results
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# Visual Studio cache/options directory
+.vs/
+
+# Include pre-built files
+!ac_cfg.h
+!config_gram.c
+!config_gram.h
+!lexer.c

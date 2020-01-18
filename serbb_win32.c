@@ -258,9 +258,26 @@ static int serbb_open(PROGRAMMER *pgm, char *port)
         DCB dcb;
 	LPVOID lpMsgBuf;
 	HANDLE hComPort = INVALID_HANDLE_VALUE;
+    char* newname = 0;
 
 	if (bitbang_check_prerequisites(pgm) < 0)
 	    return -1;
+
+    if (strncasecmp(port, "com", strlen("com")) == 0) {
+
+        // prepend "\\\\.\\" to name, required for port # >= 10
+        newname = malloc(strlen("\\\\.\\") + strlen(port) + 1);
+
+        if (newname == 0) {
+            avrdude_message(MSG_INFO, "%s: serbb_open(): out of memory\n",
+                progname);
+            exit(1);
+        }
+        strcpy(newname, "\\\\.\\");
+        strcat(newname, port);
+
+        port = newname;
+    }
 
 	hComPort = CreateFile(port, GENERIC_READ | GENERIC_WRITE, 0, NULL,
                               OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -308,12 +325,16 @@ static int serbb_open(PROGRAMMER *pgm, char *port)
                         progname, port);
                 return -1;
 	}
-        avrdude_message(MSG_DEBUG, "%s: ser_open(): opened comm port \"%s\", handle 0x%x\n",
-                        progname, port, (int)hComPort);
+        avrdude_message(MSG_DEBUG, "%s: ser_open(): opened comm port \"%s\", handle 0x%zx\n",
+                        progname, port, (INT_PTR)hComPort);
 
         pgm->fd.pfd = (void *)hComPort;
 
         dtr = rts = txd = 0;
+
+        if (newname != 0) {
+            free(newname);
+        }
 
         return 0;
 }
@@ -326,8 +347,8 @@ static void serbb_close(PROGRAMMER *pgm)
 		pgm->setpin(pgm, PIN_AVR_RESET, 1);
 		CloseHandle (hComPort);
 	}
-        avrdude_message(MSG_DEBUG, "%s: ser_close(): closed comm port handle 0x%x\n",
-                                progname, (int)hComPort);
+        avrdude_message(MSG_DEBUG, "%s: ser_close(): closed comm port handle 0x%zx\n",
+                                progname, (INT_PTR)hComPort);
 
 	hComPort = INVALID_HANDLE_VALUE;
 }

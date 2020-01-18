@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\32.fsize.c" />
+    <ClCompile Include="src\32.getehdr.c" />
+    <ClCompile Include="src\32.getphdr.c" />
+    <ClCompile Include="src\32.getshdr.c" />
+    <ClCompile Include="src\32.newehdr.c" />
+    <ClCompile Include="src\32.newphdr.c" />
+    <ClCompile Include="src\32.xlatetof.c" />
+    <ClCompile Include="src\64.xlatetof.c" />
+    <ClCompile Include="src\assert.c" />
+    <ClCompile Include="src\begin.c" />
+    <ClCompile Include="src\checksum.c" />
+    <ClCompile Include="src\cntl.c" />
+    <ClCompile Include="src\cook.c" />
+    <ClCompile Include="src\data.c" />
+    <ClCompile Include="src\end.c" />
+    <ClCompile Include="src\errmsg.c" />
+    <ClCompile Include="src\errno.c" />
+    <ClCompile Include="src\fill.c" />
+    <ClCompile Include="src\flag.c" />
+    <ClCompile Include="src\gelfehdr.c" />
+    <ClCompile Include="src\gelfphdr.c" />
+    <ClCompile Include="src\gelfshdr.c" />
+    <ClCompile Include="src\gelftrans.c" />
+    <ClCompile Include="src\getarhdr.c" />
+    <ClCompile Include="src\getaroff.c" />
+    <ClCompile Include="src\getarsym.c" />
+    <ClCompile Include="src\getbase.c" />
+    <ClCompile Include="src\getdata.c" />
+    <ClCompile Include="src\getident.c" />
+    <ClCompile Include="src\getscn.c" />
+    <ClCompile Include="src\hash.c" />
+    <ClCompile Include="src\input.c" />
+    <ClCompile Include="src\kind.c" />
+    <ClCompile Include="src\memset.c" />
+    <ClCompile Include="src\ndxscn.c" />
+    <ClCompile Include="src\newdata.c" />
+    <ClCompile Include="src\newscn.c" />
+    <ClCompile Include="src\next.c" />
+    <ClCompile Include="src\nextscn.c" />
+    <ClCompile Include="src\nlist.c" />
+    <ClCompile Include="src\opt.delscn.c" />
+    <ClCompile Include="src\rand.c" />
+    <ClCompile Include="src\rawdata.c" />
+    <ClCompile Include="src\rawfile.c" />
+    <ClCompile Include="src\strptr.c" />
+    <ClCompile Include="src\swap64.c" />
+    <ClCompile Include="src\update.c" />
+    <ClCompile Include="src\verdef_32_tof.c" />
+    <ClCompile Include="src\verdef_32_tom.c" />
+    <ClCompile Include="src\verdef_64_tof.c" />
+    <ClCompile Include="src\verdef_64_tom.c" />
+    <ClCompile Include="src\version.c" />
+    <ClCompile Include="src\x.elfext.c" />
+    <ClCompile Include="src\x.movscn.c" />
+    <ClCompile Include="src\x.remscn.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\byteswap.h" />
+    <ClInclude Include="src\config.h" />
+    <ClInclude Include="src\errors.h" />
+    <ClInclude Include="src\ext_types.h" />
+    <ClInclude Include="src\gelf.h" />
+    <ClInclude Include="src\nlist.h" />
+    <ClInclude Include="src\private.h" />
+    <ClInclude Include="src\verdef.h" />
+    <ClInclude Include="src\verneed.h" />
+    <ClInclude Include="include\libelf\elf_repl.h" />
+    <ClInclude Include="include\libelf\sys_elf.h" />
+    <ClInclude Include="include\libelf.h" />
+  </ItemGroup>
+</Project>

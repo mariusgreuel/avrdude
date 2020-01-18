@@ -133,7 +133,7 @@ static void usage(void)
  "  -q                         Quell progress output. -q -q for less.\n"
  "  -l logfile                 Use logfile rather than stderr for diagnostics.\n"
  "  -?                         Display this usage.\n"
- "\navrdude version %s, URL: <http://savannah.nongnu.org/projects/avrdude/>\n"
+ "\navrdude version %s, URL: <https://github.com/mariusgreuel/avrdude>\n"
           ,progname, version);
 }
 

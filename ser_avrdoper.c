@@ -165,11 +165,19 @@ static int usbGetReport(union filedescriptor *fdp, int reportType, int reportNum
 #include <setupapi.h>
 
 #if defined(HAVE_DDK_HIDSDI_H)
+#ifdef _MSC_VER
+#  include <hidsdi.h>
+#else
 #  include <ddk/hidsdi.h>
+#endif
 #else
 #  include "my_ddk_hidsdi.h"
 #endif
+#ifdef _MSC_VER
+#include <hidpi.h>
+#else
 #include <ddk/hidpi.h>
+#endif
 
 #ifdef USB_DEBUG
 #define DEBUG_PRINT(arg)    printf arg
