@@ -82,7 +82,11 @@
 /* ftdi.h includes usb.h */
 #include <ftdi.h>
 #else 
+#ifdef _MSC_VER
+#pragma message("No libftdi or libusb support. Install libftdi1/libusb-1.0 or libftdi/libusb and run configure/make again.")
+#else
 #warning No libftdi or libusb support. Install libftdi1/libusb-1.0 or libftdi/libusb and run configure/make again.
+#endif
 #define DO_NOT_BUILD_FT245R
 #endif
 

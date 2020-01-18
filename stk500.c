@@ -754,12 +754,10 @@ static int stk500_loadaddr(PROGRAMMER * pgm, AVRMEM * mem, unsigned int addr)
   return -1;
 }
 
-
-static int stk500_paged_write(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
-                              unsigned int page_size,
+static int stk500_paged_write2(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
+                              unsigned char* buf, unsigned int page_size,
                               unsigned int addr, unsigned int n_bytes)
 {
-  unsigned char buf[page_size + 16];
   int memtype;
   int a_div;
   int block_size;
@@ -848,6 +846,16 @@ static int stk500_paged_write(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
   }
 
   return n_bytes;
+}
+
+static int stk500_paged_write(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
+                              unsigned int page_size,
+                              unsigned int addr, unsigned int n_bytes)
+{
+  unsigned char* buf = malloc(page_size + 16);
+  int result = stk500_paged_write2(pgm, p, m, buf, page_size, addr, n_bytes);
+  free(buf);
+  return result;
 }
 
 static int stk500_paged_load(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,

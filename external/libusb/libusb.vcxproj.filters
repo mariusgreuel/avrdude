@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\descriptors.c" />
+    <ClCompile Include="src\error.c" />
+    <ClCompile Include="src\registry.c" />
+    <ClCompile Include="src\usb.c" />
+    <ClCompile Include="src\windows.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\lusb0_usb.h" />
+    <ClInclude Include="src\driver_api.h" />
+    <ClInclude Include="src\error.h" />
+    <ClInclude Include="src\libusb-win32_version.h" />
+    <ClInclude Include="src\registry.h" />
+    <ClInclude Include="src\usbi.h" />
+  </ItemGroup>
+</Project>

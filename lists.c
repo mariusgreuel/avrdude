@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "avrdude.h"
 #include "libavrdude.h"
 
 #define MAGIC 0xb05b05b0

@@ -42,6 +42,10 @@ int avrdude_message(const int msglvl, const char *format, ...);
 #include "ac_cfg.h"
 #include <windows.h>
 
+#ifdef _MSC_VER
+#include "msvc/msvc_compat.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
