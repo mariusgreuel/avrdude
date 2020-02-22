@@ -197,6 +197,7 @@
     <ClCompile Include="msvc\getopt.c" />
     <ClCompile Include="msvc\gettimeofday.c" />
     <ClCompile Include="msvc\unistd.cpp" />
+    <ClCompile Include="msvc\usb_com_helper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arduino.h" />
@@ -249,6 +250,8 @@
     <ClInclude Include="msvc\msvc_compat.h" />
     <ClInclude Include="msvc\sys\time.h" />
     <ClInclude Include="msvc\unistd.h" />
+    <ClInclude Include="msvc\usb_com_helper.h" />
+    <ClInclude Include="msvc\usb_com_locator.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="external\libelf\libelf.vcxproj">

@@ -176,6 +176,9 @@
     <ClCompile Include="msvc\unistd.cpp">
       <Filter>4 msvc</Filter>
     </ClCompile>
+    <ClCompile Include="msvc\usb_com_helper.cpp">
+      <Filter>4 msvc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arduino.h">
@@ -326,6 +329,12 @@
       <Filter>4 msvc\sys</Filter>
     </ClInclude>
     <ClInclude Include="msvc\msvc_compat.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\usb_com_helper.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\usb_com_locator.h">
       <Filter>4 msvc</Filter>
     </ClInclude>
   </ItemGroup>

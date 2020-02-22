@@ -40,6 +40,10 @@
 #include "avrdude.h"
 #include "libavrdude.h"
 
+#ifdef _MSC_VER
+#include "msvc/usb_com_helper.h"
+#endif
+
 long serial_recv_timeout = 5000; /* ms */
 
 #define W32SERBUFSIZE 1024
@@ -237,6 +241,13 @@ static int ser_open(char * port, union pinfo pinfo, union filedescriptor *fdp)
 		return -1;
 #endif
 	}
+
+#ifdef _MSC_VER
+	if (win32_find_usb_com_port(port, &newname, true, true, true) >= 0)
+	{
+		port = newname;
+	}
+#endif
 
 	if (strncasecmp(port, "com", strlen("com")) == 0) {
 
