@@ -106,7 +106,7 @@ static int usb_control (PROGRAMMER * pgm,
 {
   int nbytes;
   nbytes = usb_control_msg( PDATA(pgm)->usb_handle,
-			    USB_ENDPOINT_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+			    USB_ENDPOINT_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			    requestid,
 			    val, index,           // 2 bytes each of data
 			    NULL, 0,              // no data buffer in control messge
