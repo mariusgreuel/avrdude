@@ -543,10 +543,8 @@ static const struct pin_checklist_t pin_checklist[] = {
 static int ft245r_open(PROGRAMMER * pgm, char * port) {
     int rv;
     int devnum = -1;
-    char device[9] = "";
 
     rv = pins_check(pgm,pin_checklist,sizeof(pin_checklist)/sizeof(pin_checklist[0]), true);
-
     if(rv) {
         pgm->display(pgm, progbuf);
         return rv;
@@ -554,46 +552,33 @@ static int ft245r_open(PROGRAMMER * pgm, char * port) {
 
     strcpy(pgm->port, port);
 
-    // read device string cut after 8 chars (max. length of serial number)
-    if ((sscanf(port, "usb:%8s", device) != 1)) {
-      avrdude_message(MSG_INFO,
-          "%s: ft245r_open(): invalid device identifier '%8s'\n",
-          progname, device);
-      return -1;
-    } else {
-      if (strlen(device) == 8 ){ // serial number
-        if (verbose >= 2) {
-          avrdude_message(MSG_INFO,
-              "%s: ft245r_open(): serial number parsed as: "
-              "%s\n",
-              progname,
-              device);
+    if (strcmp(port, DEFAULT_USB) != 0) {
+        if (strncasecmp("ft", port, 2) == 0) {
+            char* startptr = port + 2;
+            char* endptr = NULL;
+            devnum = strtol(startptr, &endptr, 10);
+            if ((startptr == endptr) || (*endptr != '\0')) {
+                devnum = -1;
+            }
+        } else {
+            char device[9] = "";
+            if ((sscanf(port, "usb:%8s", device) == 1)) {
+                if (strlen(device) == 8) {
+                    // copy serial number to pgm struct
+                    strcpy(pgm->usbsn, device);
+                    // and use first device with matching serial (should be unique)
+                    devnum = 0;
+                }
+            }
         }
-        // copy serial number to pgm struct
-        strcpy(pgm->usbsn, device);
-        // and use first device with matching serial (should be unique)
-        devnum = 0;
-      }
-      else if (strncmp("ft", device, 2) || strlen(device) <= 8)  { // classic device number
-        char *startptr = device + 2;
-        char *endptr = NULL;
-        devnum = strtol(startptr,&endptr,10);
-        if ((startptr==endptr) || (*endptr != '\0')) {
-          devnum = -1;
-        }
-        avrdude_message(MSG_INFO,
-            "%s: ft245r_open(): device number parsed as: "
-            "%d\n",
-            progname,
-            devnum);
-      }
-    }
 
-    // if something went wrong before abort with helpful message
-    if (devnum < 0) {
-      avrdude_message(MSG_INFO, "%s: ft245r_open(): invalid portname '%s': use^ 'ft[0-9]+' or serial number\n",
-          progname,port);
-      return -1;
+        if (devnum < 0) {
+            avrdude_message(MSG_INFO, "%s: invalid portname '%s': use 'ft[0-9]+' or serial number\n",
+                progname, port);
+            return -1;
+        }
+    } else {
+        devnum = 0;
     }
 
     handle = malloc (sizeof (struct ftdi_context));
