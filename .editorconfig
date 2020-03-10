@@ -1,0 +1,6 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+
+[*]
+indent_style = space
+indent_size = 4
+tab_width = 8
