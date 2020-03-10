@@ -1,0 +1,33 @@
+language: c++
+
+matrix:
+  include:
+    - name: "Linux (GCC)"
+      os: linux
+      dist: bionic
+      compiler: gcc
+      before_install:
+        - sudo apt-get -y install make gcc automake libtool flex bison
+        - sudo apt-get -y install libelf-dev libusb-dev libftdi1-dev libhidapi-dev
+      script:
+        - ./bootstrap
+        - ./configure
+        - make
+    - name: "macOS (clang)"
+      os: osx
+      osx_image: xcode12u
+      compiler: clang
+      before_install:
+        - brew install flex bison
+      script:
+        - ./bootstrap
+        - ./configure
+        - make
+    - name: "Windows (MSVC)"
+      if: branch = windows OR branch = dev
+      os: windows
+      before_install:
+        - choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362"
+        - export PATH=$PATH:"/c/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin"
+      script:
+        - MSBuild.exe -fileLogger -target:avrdude -property:Configuration=Release -property:Platform=x64 avrdude.sln
