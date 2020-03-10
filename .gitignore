@@ -56,6 +56,7 @@ ylwrap
 [Rr]elease/
 x64/
 x86/
+*.log
 
 # Visual Studio cache/options directory
 .vs/
