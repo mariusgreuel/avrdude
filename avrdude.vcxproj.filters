@@ -179,6 +179,12 @@
     <ClCompile Include="msvc\usb_com_helper.cpp">
       <Filter>4 msvc</Filter>
     </ClCompile>
+    <ClCompile Include="msvc\pthread.cpp">
+      <Filter>4 msvc</Filter>
+    </ClCompile>
+    <ClCompile Include="msvc\semaphore.cpp">
+      <Filter>4 msvc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arduino.h">
@@ -335,6 +341,18 @@
       <Filter>4 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\usb_com_locator.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\pthread.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\semaphore.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\ReaderWriterLock.h">
+      <Filter>4 msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\IntegerHandleMap.h">
       <Filter>4 msvc</Filter>
     </ClInclude>
   </ItemGroup>

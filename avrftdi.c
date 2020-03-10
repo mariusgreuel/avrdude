@@ -364,7 +364,11 @@ static int avrftdi_transmit_bb(PROGRAMMER * pgm, unsigned char mode, const unsig
 		// (8*2) outputs per data byte, 6 transmit bytes per output (SET_BITS_LOW/HIGH),
 		// (8*1) inputs per data byte,  2 transmit bytes per input  (GET_BITS_LOW/HIGH),
 		// 1x SEND_IMMEDIATE
+#ifdef _MSC_VER
+		unsigned char* send_buffer = _alloca((8 * 2 * 6) * transfer_size + (8 * 1 * 2) * transfer_size + 7);
+#else
 		unsigned char send_buffer[(8*2*6)*transfer_size+(8*1*2)*transfer_size+7];
+#endif
 		int len = 0;
 		int i;
 		
@@ -384,7 +388,11 @@ static int avrftdi_transmit_bb(PROGRAMMER * pgm, unsigned char mode, const unsig
 
 		E(ftdi_write_data(pdata->ftdic, send_buffer, len) != len, pdata->ftdic);
 		if (mode & MPSSE_DO_READ) {
+#ifdef _MSC_VER
+			unsigned char* recv_buffer = _alloca(2 * 16 * transfer_size);
+#else
 		    unsigned char recv_buffer[2*16*transfer_size];
+#endif
 			int n;
 			int k = 0;
 			do {
@@ -949,10 +957,16 @@ static int avrftdi_eeprom_read(PROGRAMMER *pgm, AVRPART *p, AVRMEM *m,
 		unsigned int page_size, unsigned int addr, unsigned int len)
 {
 	unsigned char cmd[4];
-	unsigned char buffer[len], *bufptr = buffer;
 	unsigned int add;
+#ifdef _MSC_VER
+	unsigned char* buffer = _alloca(len);
+	unsigned char* bufptr = buffer;
+#else
+	unsigned char buffer[len], *bufptr = buffer;
+#endif
 
-	memset(buffer, 0, sizeof(buffer));
+	memset(buffer, 0, len);
+
 	for (add = addr; add < addr + len; add++)
 	{
 		memset(cmd, 0, sizeof(cmd));
@@ -980,9 +994,14 @@ static int avrftdi_flash_write(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
 
 	unsigned char poll_byte;
 	unsigned char *buffer = &m->buf[addr];
+#ifdef _MSC_VER
+	unsigned char* buf = _alloca(4 * len + 4);
+	unsigned char* bufptr = buf;
+#else
 	unsigned char buf[4*len+4], *bufptr = buf;
+#endif
 
-	memset(buf, 0, sizeof(buf));
+	memset(buf, 0, 4 * len + 4);
 
 	/* pre-check opcodes */
 	if (m->op[AVR_OP_LOADPAGE_LO] == NULL) {
@@ -1098,14 +1117,18 @@ static int avrftdi_flash_read(PROGRAMMER * pgm, AVRPART * p, AVRMEM * m,
 	int byte, word;
 	int use_lext_address = m->op[AVR_OP_LOAD_EXT_ADDR] != NULL;
 	unsigned int address = addr/2;
-
-	unsigned char o_buf[4*len+4];
-	unsigned char i_buf[4*len+4];
 	unsigned int index;
 
+#ifdef _MSC_VER
+	unsigned char* o_buf = _alloca(4 * len + 4);
+	unsigned char* i_buf = _alloca(4 * len + 4);
+#else
+	unsigned char o_buf[4*len+4];
+	unsigned char i_buf[4*len+4];
+#endif
 
-	memset(o_buf, 0, sizeof(o_buf));
-	memset(i_buf, 0, sizeof(i_buf));
+	memset(o_buf, 0, 4 * len + 4);
+	memset(i_buf, 0, 4 * len + 4);
 
 	/* pre-check opcodes */
 	if (m->op[AVR_OP_READ_LO] == NULL) {

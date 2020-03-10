@@ -78,7 +78,7 @@
 #  include <libusb.h>
 # endif
 # include <libftdi1/ftdi.h>
-#elif defined(HAVE_LIBFTDI) && defined(HAVE_USB_H)
+#elif defined(HAVE_LIBFTDI) && (defined(HAVE_USB_H) || defined(_MSC_VER))
 /* ftdi.h includes usb.h */
 #include <ftdi.h>
 #else 

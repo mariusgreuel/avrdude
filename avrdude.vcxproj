@@ -84,7 +84,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libhidapi\include;external\libusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -96,7 +96,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libhidapi\include;external\libusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -108,7 +108,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libhidapi\include;external\libusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libhidapi\include;external\libusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -164,6 +164,8 @@
     <ClCompile Include="lists.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="micronucleus.c" />
+    <ClCompile Include="msvc\pthread.cpp" />
+    <ClCompile Include="msvc\semaphore.cpp" />
     <ClCompile Include="par.c" />
     <ClCompile Include="pgm.c" />
     <ClCompile Include="pgm_type.c" />
@@ -226,6 +228,10 @@
     <ClInclude Include="linuxgpio.h" />
     <ClInclude Include="linux_ppdev.h" />
     <ClInclude Include="micronucleus.h" />
+    <ClInclude Include="msvc\IntegerHandleMap.h" />
+    <ClInclude Include="msvc\pthread.h" />
+    <ClInclude Include="msvc\ReaderWriterLock.h" />
+    <ClInclude Include="msvc\semaphore.h" />
     <ClInclude Include="my_ddk_hidsdi.h" />
     <ClInclude Include="par.h" />
     <ClInclude Include="pickit2.h" />
@@ -256,6 +262,9 @@
   <ItemGroup>
     <ProjectReference Include="external\libelf\libelf.vcxproj">
       <Project>{a2d07885-a0d1-473b-83b2-209cd008ee8f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\libftdi1\libftdi1.vcxproj">
+      <Project>{632649ab-a351-46d4-a81f-1d6e9a819a5c}</Project>
     </ProjectReference>
     <ProjectReference Include="external\libhidapi\libhidapi.vcxproj">
       <Project>{17054837-6ae6-44d7-914d-9625edef4657}</Project>
