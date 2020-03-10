@@ -12,7 +12,7 @@
 # include <libftdi1/ftdi.h>
 # undef HAVE_LIBFTDI_TYPE_232H
 # define HAVE_LIBFTDI_TYPE_232H 1
-#elif defined(HAVE_LIBFTDI) && defined(HAVE_USB_H)
+#elif defined(HAVE_LIBFTDI) && (defined(HAVE_USB_H) || defined(_MSC_VER))
 /* ftdi.h includes usb.h */
 #include <ftdi.h>
 #else 

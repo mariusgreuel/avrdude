@@ -32,13 +32,13 @@
 /* #undef HAVE_LIBELF_LIBELF_H */
 
 /* Define if FTDI support is enabled via libftdi */
-/* #undef HAVE_LIBFTDI */
+#define HAVE_LIBFTDI 1
 
 /* Define if FTDI support is enabled via libftdi1 */
 /* #undef HAVE_LIBFTDI1 */
 
 /* Define if libftdi supports FT232H, libftdi version >= 0.20 */
-/* #undef HAVE_LIBFTDI_TYPE_232H */
+#define HAVE_LIBFTDI_TYPE_232H 1
 
 /* Define if HID support is enabled via the Win32 DDK */
 #define HAVE_LIBHID 1
@@ -92,7 +92,7 @@
 /* #undef HAVE_PARPORT */
 
 /* Define to 1 if you have the <pthread.h> header file. */
-/* #undef HAVE_PTHREAD_H */
+#define HAVE_PTHREAD_H 1
 
 /* Define to 1 if you have the `select' function. */
 /* #undef HAVE_SELECT */

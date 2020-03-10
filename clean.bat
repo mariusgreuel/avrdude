@@ -9,6 +9,10 @@ rmdir /s /q "external\libelf\Debug" >nul 2>nul
 rmdir /s /q "external\libelf\Release" >nul 2>nul
 rmdir /s /q "external\libelf\x64" >nul 2>nul
 
+rmdir /s /q "external\libftdi1\Debug" >nul 2>nul
+rmdir /s /q "external\libftdi1\Release" >nul 2>nul
+rmdir /s /q "external\libftdi1\x64" >nul 2>nul
+
 rmdir /s /q "external\libhidapi\Debug" >nul 2>nul
 rmdir /s /q "external\libhidapi\Release" >nul 2>nul
 rmdir /s /q "external\libhidapi\x64" >nul 2>nul

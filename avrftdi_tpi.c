@@ -13,6 +13,11 @@
 #include "avrftdi_tpi.h"
 #include "avrftdi_private.h"
 
+#ifdef _MSC_VER 
+#include <intrin.h> 
+#define __builtin_popcount __popcnt 
+#endif
+
 #ifndef DO_NOT_BUILD_AVRFTDI
 
 static void avrftdi_tpi_disable(PROGRAMMER *);
