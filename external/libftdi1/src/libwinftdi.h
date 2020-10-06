@@ -114,30 +114,35 @@ namespace LibWinFtdi
             if (m_module != nullptr)
                 return S_FALSE;
 
-            m_module = LoadLibraryExW(L"ftd2xx.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-            if (m_module == nullptr)
+            HMODULE module = LoadLibraryExW(L"ftd2xx.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            if (module == nullptr)
             {
                 return HRESULT_FROM_WIN32(GetLastError());
             }
 
             HRESULT hr = S_OK;
-            if (FAILED(hr = LoadImport("FT_CreateDeviceInfoList", &FT_CreateDeviceInfoList)) ||
-                FAILED(hr = LoadImport("FT_GetDeviceInfoList", &FT_GetDeviceInfoList)) ||
-                FAILED(hr = LoadImport("FT_OpenEx", &FT_OpenEx)) ||
-                FAILED(hr = LoadImport("FT_Close", &FT_Close)) ||
-                FAILED(hr = LoadImport("FT_Purge", &FT_Purge)) ||
-                FAILED(hr = LoadImport("FT_SetTimeouts", &FT_SetTimeouts)) ||
-                FAILED(hr = LoadImport("FT_SetBaudRate", &FT_SetBaudRate)) ||
-                FAILED(hr = LoadImport("FT_SetBitMode", &FT_SetBitMode)) ||
-                FAILED(hr = LoadImport("FT_SetLatencyTimer", &FT_SetLatencyTimer)) ||
-                FAILED(hr = LoadImport("FT_GetQueueStatus", &FT_GetQueueStatus)) ||
-                FAILED(hr = LoadImport("FT_SetEventNotification", &FT_SetEventNotification)) ||
-                FAILED(hr = LoadImport("FT_Read", &FT_Read)) ||
-                FAILED(hr = LoadImport("FT_Write", &FT_Write)))
+            if (FAILED(hr = LoadImport(module, "FT_CreateDeviceInfoList", &FT_CreateDeviceInfoList)) ||
+                FAILED(hr = LoadImport(module, "FT_GetDeviceInfoList", &FT_GetDeviceInfoList)) ||
+                FAILED(hr = LoadImport(module, "FT_OpenEx", &FT_OpenEx)) ||
+                FAILED(hr = LoadImport(module, "FT_Close", &FT_Close)) ||
+                FAILED(hr = LoadImport(module, "FT_ResetDevice", &FT_ResetDevice)) ||
+                FAILED(hr = LoadImport(module, "FT_ResetPort", &FT_ResetPort)) ||
+                FAILED(hr = LoadImport(module, "FT_CyclePort", &FT_ResetPort)) ||
+                FAILED(hr = LoadImport(module, "FT_Purge", &FT_Purge)) ||
+                FAILED(hr = LoadImport(module, "FT_SetTimeouts", &FT_SetTimeouts)) ||
+                FAILED(hr = LoadImport(module, "FT_SetBaudRate", &FT_SetBaudRate)) ||
+                FAILED(hr = LoadImport(module, "FT_SetBitMode", &FT_SetBitMode)) ||
+                FAILED(hr = LoadImport(module, "FT_SetLatencyTimer", &FT_SetLatencyTimer)) ||
+                FAILED(hr = LoadImport(module, "FT_GetQueueStatus", &FT_GetQueueStatus)) ||
+                FAILED(hr = LoadImport(module, "FT_SetEventNotification", &FT_SetEventNotification)) ||
+                FAILED(hr = LoadImport(module, "FT_Read", &FT_Read)) ||
+                FAILED(hr = LoadImport(module, "FT_Write", &FT_Write)))
             {
+                FreeLibrary(module);
                 return hr;
             }
 
+            m_module = module;
             return S_OK;
         }
 
@@ -154,9 +159,9 @@ namespace LibWinFtdi
 
     private:
         template<typename T>
-        HRESULT LoadImport(LPCSTR lpProcName, T** ptr)
+        static HRESULT LoadImport(HMODULE module, LPCSTR lpProcName, T** ptr)
         {
-            auto proc = GetProcAddress(m_module, lpProcName);
+            auto proc = GetProcAddress(module, lpProcName);
             if (proc == nullptr)
             {
                 return HRESULT_FROM_WIN32(GetLastError());
@@ -169,11 +174,14 @@ namespace LibWinFtdi
     private:
         HMODULE m_module = nullptr;
 
-    public:
+    protected:
         FT_STATUS(WINAPI* FT_CreateDeviceInfoList)(LPDWORD lpdwNumDevs) = nullptr;
         FT_STATUS(WINAPI* FT_GetDeviceInfoList)(DeviceInfo* pDest, LPDWORD lpdwNumDevs) = nullptr;
         FT_STATUS(WINAPI* FT_OpenEx)(PVOID pArg1, DWORD Flags, FT_HANDLE* pHandle) = nullptr;
         FT_STATUS(WINAPI* FT_Close)(FT_HANDLE ftHandle) = nullptr;
+        FT_STATUS(WINAPI* FT_ResetDevice)(FT_HANDLE ftHandle) = nullptr;
+        FT_STATUS(WINAPI* FT_ResetPort)(FT_HANDLE ftHandle) = nullptr;
+        FT_STATUS(WINAPI* FT_CyclePort)(FT_HANDLE ftHandle) = nullptr;
         FT_STATUS(WINAPI* FT_Purge)(FT_HANDLE ftHandle, ULONG Mask) = nullptr;
         FT_STATUS(WINAPI* FT_SetTimeouts)(FT_HANDLE ftHandle, ULONG ReadTimeout, ULONG WriteTimeout) = nullptr;
         FT_STATUS(WINAPI* FT_SetBaudRate)(FT_HANDLE ftHandle, ULONG BaudRate) = nullptr;
@@ -276,6 +284,36 @@ namespace LibWinFtdi
             }
 
             return FT_Close(m_handle);
+        }
+
+        FT_STATUS ResetDevice()
+        {
+            if (FAILED(Load()))
+            {
+                return FT_INVALID_HANDLE;
+            }
+
+            return FT_ResetDevice(m_handle);
+        }
+
+        FT_STATUS ResetPort()
+        {
+            if (FAILED(Load()))
+            {
+                return FT_INVALID_HANDLE;
+            }
+
+            return FT_ResetPort(m_handle);
+        }
+
+        FT_STATUS CyclePort()
+        {
+            if (FAILED(Load()))
+            {
+                return FT_INVALID_HANDLE;
+            }
+
+            return FT_CyclePort(m_handle);
         }
 
         FT_STATUS Purge(ULONG Mask = FT_PURGE_RX | FT_PURGE_TX)
