@@ -1,0 +1,16 @@
+//
+// resource.rc2
+// Copyright (C) 2020 Marius Greuel. All rights reserved.
+//
+
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+#pragma code_page(1252)
+
+//////////////////////////////////////////////////////////////////////////// Version
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+#include "version.rc2"
