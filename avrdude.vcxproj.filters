@@ -12,10 +12,13 @@
     <Filter Include="3 Generated Files">
       <UniqueIdentifier>{be5ce6e6-223e-4d41-8915-29103d899c5a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="4 msvc">
+    <Filter Include="4 Resource Files">
+      <UniqueIdentifier>{a7668888-00c6-4911-9e47-7af645f31778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="5 msvc">
       <UniqueIdentifier>{dbbd7498-e1e9-4d80-b91f-137dc5b988f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="4 msvc\sys">
+    <Filter Include="5 msvc\sys">
       <UniqueIdentifier>{1cc9d4fb-f03f-48cb-8af7-3e96681dc03b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -168,22 +171,22 @@
       <Filter>3 Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="msvc\getopt.c">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
     <ClCompile Include="msvc\gettimeofday.c">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
     <ClCompile Include="msvc\unistd.cpp">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
     <ClCompile Include="msvc\usb_com_helper.cpp">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
     <ClCompile Include="msvc\pthread.cpp">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
     <ClCompile Include="msvc\semaphore.cpp">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -326,34 +329,53 @@
       <Filter>3 Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="msvc\getopt.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\unistd.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\sys\time.h">
-      <Filter>4 msvc\sys</Filter>
+      <Filter>5 msvc\sys</Filter>
     </ClInclude>
     <ClInclude Include="msvc\msvc_compat.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\usb_com_helper.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\usb_com_locator.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\pthread.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\semaphore.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\ReaderWriterLock.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
     <ClInclude Include="msvc\IntegerHandleMap.h">
-      <Filter>4 msvc</Filter>
+      <Filter>5 msvc</Filter>
     </ClInclude>
+    <ClInclude Include="msvc\resource.h">
+      <Filter>2 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="msvc\version.h">
+      <Filter>4 Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="msvc\avrdude.rc">
+      <Filter>4 Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="msvc\res\resource.rc2">
+      <Filter>4 Resource Files</Filter>
+    </None>
+    <None Include="msvc\res\version.rc2">
+      <Filter>4 Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -92,6 +92,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -104,6 +107,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,6 +127,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,6 +147,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="arduino.c" />
@@ -231,7 +243,9 @@
     <ClInclude Include="msvc\IntegerHandleMap.h" />
     <ClInclude Include="msvc\pthread.h" />
     <ClInclude Include="msvc\ReaderWriterLock.h" />
+    <ClInclude Include="msvc\resource.h" />
     <ClInclude Include="msvc\semaphore.h" />
+    <ClInclude Include="msvc\version.h" />
     <ClInclude Include="my_ddk_hidsdi.h" />
     <ClInclude Include="par.h" />
     <ClInclude Include="pickit2.h" />
@@ -272,6 +286,17 @@
     <ProjectReference Include="external\libusb\libusb.vcxproj">
       <Project>{22615ec5-9dbc-4538-9c01-2cd535b3810b}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="msvc\avrdude.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="msvc\res\resource.rc2">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="msvc\res\version.rc2">
+      <FileType>Text</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
