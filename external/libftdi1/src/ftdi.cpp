@@ -46,6 +46,7 @@ static ftdi_chip_type MapChipType(ULONG type)
         return TYPE_AM;
     }
 }
+
 static int SetError(struct ftdi_context* ftdi, int result, const char* error_str)
 {
     if (ftdi != nullptr)
@@ -82,6 +83,42 @@ void ftdi_free(struct ftdi_context* ftdi)
 
 int ftdi_set_interface(struct ftdi_context* ftdi, enum ftdi_interface interface)
 {
+    if (ftdi == nullptr)
+    {
+        return SetError(ftdi, -2, "USB device unavailable");
+    }
+
+    if (ftdi->usb_dev != nullptr)
+    {
+        if (ftdi->index != (interface != INTERFACE_ANY ? interface : INTERFACE_A))
+        {
+            return SetError(ftdi, -3, "Interface can not be changed on an already open device");
+        }
+    }
+
+    switch (interface)
+    {
+    case INTERFACE_ANY:
+    case INTERFACE_A:
+        ftdi->interface = 0;
+        ftdi->index = INTERFACE_A;
+        break;
+    case INTERFACE_B:
+        ftdi->interface = 1;
+        ftdi->index = INTERFACE_B;
+        break;
+    case INTERFACE_C:
+        ftdi->interface = 2;
+        ftdi->index = INTERFACE_C;
+        break;
+    case INTERFACE_D:
+        ftdi->interface = 3;
+        ftdi->index = INTERFACE_D;
+        break;
+    default:
+        return SetError(ftdi, -1, "Unknown interface");
+    }
+
     return 0;
 }
 
@@ -93,7 +130,7 @@ int ftdi_init(struct ftdi_context* ftdi)
 
 void ftdi_deinit(struct ftdi_context* ftdi)
 {
-    if (ftdi->usb_dev != nullptr)
+    if (ftdi != nullptr && ftdi->usb_dev != nullptr)
     {
         std::unique_ptr<FtdiDevice> device(reinterpret_cast<FtdiDevice*>(ftdi->usb_dev));
         ftdi->usb_dev = nullptr;
@@ -145,6 +182,7 @@ int ftdi_usb_open_desc_index(struct ftdi_context* ftdi, int vendor, int product,
             return SetError(ftdi, -3, "failed to open device");
         }
 
+        device->ResetDevice();
         device->SetEventNotification(FT_EVENT_RXCHAR);
 
         ftdi->type = MapChipType(info.Type);
