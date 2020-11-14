@@ -176,14 +176,20 @@ int ftdi_usb_open_desc_index(struct ftdi_context* ftdi, int vendor, int product,
         }
 
         auto device = std::make_unique<FtdiDevice>();
-        auto status = device->OpenBySerialNumber(info.SerialNumber);
+        FT_STATUS status = device->OpenBySerialNumber(info.SerialNumber);
+        if (status == FT_OK)
+        {
+            device->ResetDevice();
+            device->Purge();
+            device->SetBitMode(0, 0);
+            device->SetTimeouts(5000, 5000);
+            status = device->SetEventNotification(FT_EVENT_RXCHAR);
+        }
+
         if (status != FT_OK)
         {
             return SetError(ftdi, -3, "failed to open device");
         }
-
-        device->ResetDevice();
-        device->SetEventNotification(FT_EVENT_RXCHAR);
 
         ftdi->type = MapChipType(info.Type);
         ftdi->usb_dev = reinterpret_cast<struct libusb_device_handle*>(device.release());
