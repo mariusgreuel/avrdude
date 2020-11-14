@@ -135,6 +135,7 @@ namespace LibWinFtdi
                 FAILED(hr = LoadImport(module, "FT_SetLatencyTimer", &FT_SetLatencyTimer)) ||
                 FAILED(hr = LoadImport(module, "FT_GetQueueStatus", &FT_GetQueueStatus)) ||
                 FAILED(hr = LoadImport(module, "FT_SetEventNotification", &FT_SetEventNotification)) ||
+                FAILED(hr = LoadImport(module, "FT_SetUSBParameters", &FT_SetUSBParameters)) ||
                 FAILED(hr = LoadImport(module, "FT_Read", &FT_Read)) ||
                 FAILED(hr = LoadImport(module, "FT_Write", &FT_Write)))
             {
@@ -164,6 +165,7 @@ namespace LibWinFtdi
             auto proc = GetProcAddress(module, lpProcName);
             if (proc == nullptr)
             {
+                *ptr = nullptr;
                 return HRESULT_FROM_WIN32(GetLastError());
             }
 
@@ -182,13 +184,14 @@ namespace LibWinFtdi
         FT_STATUS(WINAPI* FT_ResetDevice)(FT_HANDLE ftHandle) = nullptr;
         FT_STATUS(WINAPI* FT_ResetPort)(FT_HANDLE ftHandle) = nullptr;
         FT_STATUS(WINAPI* FT_CyclePort)(FT_HANDLE ftHandle) = nullptr;
-        FT_STATUS(WINAPI* FT_Purge)(FT_HANDLE ftHandle, ULONG Mask) = nullptr;
-        FT_STATUS(WINAPI* FT_SetTimeouts)(FT_HANDLE ftHandle, ULONG ReadTimeout, ULONG WriteTimeout) = nullptr;
-        FT_STATUS(WINAPI* FT_SetBaudRate)(FT_HANDLE ftHandle, ULONG BaudRate) = nullptr;
+        FT_STATUS(WINAPI* FT_Purge)(FT_HANDLE ftHandle, DWORD dwMask) = nullptr;
+        FT_STATUS(WINAPI* FT_SetTimeouts)(FT_HANDLE ftHandle, DWORD dwReadTimeout, DWORD dwWriteTimeout) = nullptr;
+        FT_STATUS(WINAPI* FT_SetBaudRate)(FT_HANDLE ftHandle, DWORD dwBaudRate) = nullptr;
         FT_STATUS(WINAPI* FT_SetBitMode)(FT_HANDLE ftHandle, UCHAR ucMask, UCHAR ucEnable) = nullptr;
-        FT_STATUS(WINAPI* FT_SetLatencyTimer)(FT_HANDLE ftHandle, UCHAR ucLatency) = nullptr;
+        FT_STATUS(WINAPI* FT_SetLatencyTimer)(FT_HANDLE ftHandle, UCHAR ucTimer) = nullptr;
         FT_STATUS(WINAPI* FT_GetQueueStatus)(FT_HANDLE ftHandle, DWORD* dwRxBytes) = nullptr;
         FT_STATUS(WINAPI* FT_SetEventNotification)(FT_HANDLE ftHandle, DWORD Mask, PVOID Param) = nullptr;
+        FT_STATUS(WINAPI* FT_SetUSBParameters)(FT_HANDLE ftHandle, DWORD dwInTransferSize, DWORD dwOutTransferSize) = nullptr;
         FT_STATUS(WINAPI* FT_Read)(FT_HANDLE ftHandle, LPVOID lpBuffer, DWORD dwBytesToRead, LPDWORD lpBytesReturned) = nullptr;
         FT_STATUS(WINAPI* FT_Write)(FT_HANDLE ftHandle, LPVOID lpBuffer, DWORD dwBytesToWrite, LPDWORD lpBytesWritten) = nullptr;
     };
@@ -316,34 +319,34 @@ namespace LibWinFtdi
             return FT_CyclePort(m_handle);
         }
 
-        FT_STATUS Purge(ULONG Mask = FT_PURGE_RX | FT_PURGE_TX)
+        FT_STATUS Purge(DWORD dwMask = FT_PURGE_RX | FT_PURGE_TX)
         {
             if (FAILED(Load()))
             {
                 return FT_INVALID_HANDLE;
             }
 
-            return FT_Purge(m_handle, Mask);
+            return FT_Purge(m_handle, dwMask);
         }
 
-        FT_STATUS SetTimeouts(ULONG ReadTimeout, ULONG WriteTimeout)
+        FT_STATUS SetTimeouts(DWORD dwReadTimeout, DWORD dwWriteTimeout)
         {
             if (FAILED(Load()))
             {
                 return FT_INVALID_HANDLE;
             }
 
-            return FT_SetTimeouts(m_handle, ReadTimeout, WriteTimeout);
+            return FT_SetTimeouts(m_handle, dwReadTimeout, dwWriteTimeout);
         }
 
-        FT_STATUS SetBaudRate(ULONG BaudRate)
+        FT_STATUS SetBaudRate(DWORD dwBaudRate)
         {
             if (FAILED(Load()))
             {
                 return FT_INVALID_HANDLE;
             }
 
-            return FT_SetBaudRate(m_handle, BaudRate);
+            return FT_SetBaudRate(m_handle, dwBaudRate);
         }
 
         FT_STATUS SetBitMode(UCHAR ucMask, UCHAR ucEnable)
@@ -356,14 +359,14 @@ namespace LibWinFtdi
             return FT_SetBitMode(m_handle, ucMask, ucEnable);
         }
 
-        FT_STATUS SetLatencyTimer(UCHAR ucLatency)
+        FT_STATUS SetLatencyTimer(UCHAR ucTimer)
         {
             if (FAILED(Load()))
             {
                 return FT_INVALID_HANDLE;
             }
 
-            return FT_SetLatencyTimer(m_handle, ucLatency);
+            return FT_SetLatencyTimer(m_handle, ucTimer);
         }
 
         FT_STATUS GetQueueStatus(DWORD* dwRxBytes)
@@ -389,6 +392,16 @@ namespace LibWinFtdi
             }
 
             return FT_SetEventNotification(m_handle, Mask, m_event);
+        }
+
+        FT_STATUS SetUSBParameters(DWORD dwInTransferSize, DWORD dwOutTransferSize)
+        {
+            if (FAILED(Load()))
+            {
+                return FT_INVALID_HANDLE;
+            }
+
+            return FT_SetUSBParameters(m_handle, dwInTransferSize, dwOutTransferSize);
         }
 
         FT_STATUS Read(LPVOID lpBuffer, DWORD dwBytesToRead, LPDWORD lpBytesReturned)
