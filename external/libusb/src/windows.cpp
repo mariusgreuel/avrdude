@@ -140,7 +140,6 @@ int usb_os_find_devices(struct usb_bus* bus, struct usb_device** devices)
         if (FAILED(item->Open(driver)) ||
             FAILED(driver->GetDescriptor(USB_DT_DEVICE, 0, 0, &dev->descriptor, sizeof(dev->descriptor), nullptr, 5000)))
         {
-            USBERR0("couldn't read device descriptor\n");
             free(dev);
             continue;
         }
