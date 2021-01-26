@@ -215,6 +215,19 @@ To install a local build of AVRDUDE on your system, run the following command:
 sudo make install
 ```
 
+#### Linux udev rules
+
+If you intent to use either the Micronucleus or Teensy bootloader, you should edit the udev rules so that you can run AVRDUDE without root.
+
+For instance, if you are on Ubuntu and you installed the avrdude package, you would edit `/lib/udev/rules.d/60-avrdude.rules` and add the following rules:
+
+```bash
+# Micronucleus Bootloader
+SUBSYSTEM=="usb", ATTR{idVendor}=="16d0", ATTR{idProduct}=="0753", TAG+="uaccess"
+# Teensy Bootloader
+SUBSYSTEM=="usb", ATTR{idVendor}=="16c0", ATTR{idProduct}=="0478", TAG+="uaccess"
+```
+
 ## Troubleshooting Tips & Tricks
 
 ### Atmel DFU Device driver broken
