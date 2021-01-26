@@ -647,6 +647,13 @@ static int micronucleus_open(PROGRAMMER* pgm, char* port)
         }
     }
 
+    if (port != NULL && dev_name == NULL)
+    {
+        avrdude_message(MSG_INFO, "%s: ERROR: Invalid -P value: '%s'\n", progname, port);
+        avrdude_message(MSG_INFO, "%sUse -P usb:bus:device\n", progbuf);
+        return -1;
+    }
+
     // Determine VID/PID
     int vid = pgm->usbvid ? pgm->usbvid : MICRONUCLEUS_VID;
     int pid = MICRONUCLEUS_PID;
@@ -710,8 +717,7 @@ static int micronucleus_open(PROGRAMMER* pgm, char* port)
                     pdata->usb_handle = usb_open(device);
                     if (pdata->usb_handle == NULL)
                     {
-                        avrdude_message(MSG_INFO, "%s: WARNING: cannot open USB device: %s\n", progname, usb_strerror());
-                        continue;
+                        avrdude_message(MSG_INFO, "%s: ERROR: Failed to open USB device: %s\n", progname, usb_strerror());
                     }
                 }
             }
@@ -731,13 +737,6 @@ static int micronucleus_open(PROGRAMMER* pgm, char* port)
         }
 
         break;
-    }
-
-    if (port != NULL && dev_name == NULL)
-    {
-        avrdude_message(MSG_INFO, "%s: ERROR: Invalid -P value: '%s'\n", progname, port);
-        avrdude_message(MSG_INFO, "%sUse -P usb:bus:device\n", progbuf);
-        return -1;
     }
 
     if (!pdata->usb_handle)
@@ -874,7 +873,7 @@ static int micronucleus_parseextparams(PROGRAMMER* pgm, LISTID xparams)
         }
         else
         {
-            avrdude_message(MSG_INFO, "%s: invalid extended parameter '%s'\n", progname, param);
+            avrdude_message(MSG_INFO, "%s: Invalid extended parameter '%s'\n", progname, param);
             return -1;
         }
     }
@@ -912,7 +911,7 @@ void micronucleus_initpgm(PROGRAMMER* pgm)
  // Give a proper error if we were not compiled with libusb
 static int micronucleus_nousb_open(struct programmer_t* pgm, char* name)
 {
-    avrdude_message(MSG_INFO, "%s: error: no usb support. Please compile again with libusb installed.\n", progname);
+    avrdude_message(MSG_INFO, "%s: error: No usb support. Please compile again with libusb installed.\n", progname);
     return -1;
 }
 
