@@ -562,9 +562,12 @@ static void micronucleus_powerdown(PROGRAMMER* pgm)
         pdata->write_last_page = false;
 
         uint8_t* buffer = (unsigned char*)malloc(pdata->page_size);
-        memset(buffer, 0xFF, pdata->page_size);
-        micronucleus_write_page(pdata, pdata->bootloader_start - pdata->page_size, buffer, pdata->page_size);
-        free(buffer);
+        if (buffer != NULL)
+        {
+            memset(buffer, 0xFF, pdata->page_size);
+            micronucleus_write_page(pdata, pdata->bootloader_start - pdata->page_size, buffer, pdata->page_size);
+            free(buffer);
+        }
     }
 
     if (pdata->start_program)
@@ -821,6 +824,11 @@ static int micronucleus_paged_write(PROGRAMMER* pgm, AVRPART* p, AVRMEM* mem,
         }
 
         uint8_t* page_buffer = (uint8_t*)malloc(pdata->page_size);
+        if (page_buffer == NULL)
+        {
+            avrdude_message(MSG_INFO, "%s: Failed to allocate memory\n", progname);
+            return -1;
+        }
 
         // Note: Page size reported by the bootloader may be smaller than device page size as configured in avrdude.conf.
         int result = 0;

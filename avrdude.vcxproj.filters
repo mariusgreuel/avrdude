@@ -143,6 +143,9 @@
     <ClCompile Include="stk500v2.c">
       <Filter>1 Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="teensy.c">
+      <Filter>1 Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="term.c">
       <Filter>1 Source Files</Filter>
     </ClCompile>
@@ -302,6 +305,9 @@
       <Filter>2 Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stk500v2_private.h">
+      <Filter>2 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="teensy.h">
       <Filter>2 Header Files</Filter>
     </ClInclude>
     <ClInclude Include="term.h">

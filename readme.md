@@ -10,6 +10,7 @@ Noteable changes include:
 
 - Support Atmel AVR programmers out of the box
 - Support Micronucleus bootloader
+- Support Teensy HalfKay bootloader
 - Support COM port discovery via USB VID/PID
 - Support Arduino Leonardo bootloader auto-reset
 - Support WinUSB devices via custom libusb
@@ -17,6 +18,12 @@ Noteable changes include:
 - Support HID devices via libhidapi
 - Support Visual Studio
 - Miscellaneous bug-fixes and patches
+
+## Download
+
+To get the latest version of **AVRDUDE for Windows**, go to the [releases folder](https://github.com/mariusgreuel/avrdude/releases):
+
+<https://github.com/mariusgreuel/avrdude/releases>
 
 ## Feature Details
 
@@ -44,7 +51,27 @@ As it does not support reading, use the -V option to prevent AVRDUDE from verifi
 #### Example: Flashing a Micronucleus bootloader device
 
 ```bash
-AVRDUDE -c micronucleus -p t85 -x wait -V -U flash:w:main.hex:i
+avrdude -c micronucleus -p t85 -x wait -V -U flash:w:main.hex:i
+```
+
+### Support Teensy HalfKay bootloader
+
+This build adds support for the [Teensy HalfKay bootloader](https://www.pjrc.com/teensy/halfkay_protocol.html), so you do no longer need a the Teensy Loader tool when working with Teensy devices.
+
+Since this bootloader is optimized for size, it implements writing to flash memory only.
+As it does not support reading, use the -V option to prevent AVRDUDE from verifing the flash memory. To have AVRDUDE wait for the device to be connected, use the extended option '-x wait'.
+
+Supported devices are:
+
+- Teensy 1.0 (AT90USB162)
+- Teensy 2.0 (ATmega32U4)
+- Teensy++ 1.0 (AT90USB646)
+- Teensy++ 2.0 (AT90USB1286)
+
+#### Example: Flashing a Teensy 2.0 device
+
+```bash
+avrdude -c teensy -p m32u4 -x wait -V -U flash:w:main.hex:i
 ```
 
 ### Support COM port discovery via USB VID/PID
@@ -157,13 +184,17 @@ Note: The folder `msvc\generated` includes pre-built files from the AVRDUDE conf
 
 ### Building AVRDUDE for Linux
 
+Note that the AVRDUDE for Linux version does not contain all extra Windows features. The features that have been added to the stock version of AVRDUDE include:
+
+- Support Micronucleus bootloader
+- Support Teensy HalfKay bootloader
+
 #### Linux Prerequisites
 
-In order to build AVRDUDE on Linux, you need the following packages:
+In order to build AVRDUDE on Linux, you need to install the following packages:
 
 ```bash
-sudo apt install make gcc automake libtool flex bison
-sudo apt install libelf-dev libusb-dev libftdi1-dev libhidapi-dev
+sudo apt install git make gcc automake libtool flex bison libelf-dev libusb-dev libftdi1-dev libhidapi-dev
 ```
 
 #### Linux Build Instructions
@@ -176,6 +207,12 @@ cd avrdude
 ./bootstrap
 ./configure
 make
+```
+
+To install a local build of AVRDUDE on your system, run the following command:
+
+```bash
+sudo make install
 ```
 
 ## Troubleshooting Tips & Tricks

@@ -194,6 +194,7 @@
     <ClCompile Include="stk500.c" />
     <ClCompile Include="stk500generic.c" />
     <ClCompile Include="stk500v2.c" />
+    <ClCompile Include="teensy.c" />
     <ClCompile Include="term.c" />
     <ClCompile Include="update.c" />
     <ClCompile Include="usbasp.c" />
@@ -258,6 +259,7 @@
     <ClInclude Include="stk500v2.h" />
     <ClInclude Include="stk500v2_private.h" />
     <ClInclude Include="stk500_private.h" />
+    <ClInclude Include="teensy.h" />
     <ClInclude Include="term.h" />
     <ClInclude Include="tpi.h" />
     <ClInclude Include="usbasp.h" />
