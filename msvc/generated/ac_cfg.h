@@ -173,7 +173,7 @@
 #define PACKAGE_NAME "avrdude"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "avrdude 6.3.1.0-windows"
+#define PACKAGE_STRING "avrdude 6.3.1.1-windows"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "avrdude"
@@ -182,7 +182,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "6.3.1.0-windows"
+#define PACKAGE_VERSION "6.3.1.1-windows"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -191,7 +191,7 @@
 #define TIME_WITH_SYS_TIME 1
 
 /* Version number of package */
-#define VERSION "6.3.1.0-windows"
+#define VERSION "6.3.1.1-windows"
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
