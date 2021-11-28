@@ -8,16 +8,18 @@ The purpose of this fork is to add better support for Windows to bring it on par
 
 Noteable changes include:
 
-- Support Atmel AVR programmers out of the box
-- Support Micronucleus bootloader
-- Support Teensy HalfKay bootloader
-- Support COM port discovery via USB VID/PID
-- Support Arduino Leonardo bootloader auto-reset
-- Support WinUSB devices via custom libusb
-- Support FTDI devices via custom libftdi
-- Support HID devices via libhidapi
-- Support Visual Studio
-- Miscellaneous bug-fixes and patches
+- [Support Atmel AVR programmers out of the box](#support-atmel-avr-programmers-out-of-the-box)
+- [Support Micronucleus bootloader](#support-micronucleus-bootloader)
+- [Support Teensy HalfKay bootloader](#support-teensy-halfkay-bootloader)
+- [Support COM port discovery via USB VID/PID](#support-com-port-discovery-via-usb-vidpid)
+- [Support Arduino Leonardo bootloader auto-reset](#support-arduino-leonardo-bootloader-auto-reset)
+- [Support WinUSB devices via custom libusb](#support-winusb-devices-via-custom-libusb)
+- [Support FTDI devices via custom libftdi](#support-ftdi-devices-via-custom-libftdi)
+- [Support HID devices via libhidapi](#support-hid-devices-via-libhidapi)
+- [Support Visual Studio](#support-visual-studio)
+- [Miscellaneous bug-fixes and patches](#miscellaneous-bug-fixes-and-patches)
+
+The original AVRDUDE project homepage can be found here <https://savannah.nongnu.org/projects/avrdude>.
 
 ## Download
 
@@ -34,7 +36,7 @@ This build contains support for Atmel AVR programmers, such as
 - [Atmel-ICE](https://www.microchip.com/DevelopmentTools/ProductDetails/ATATMEL-ICE) (Part Number: ATATMEL-ICE)
 - [Atmel AVRISP mkII](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATAVRISP2) (Part Number: ATAVRISP2)
 
-This build does not rely on **libusb** drivers. Instead the default Atmel drivers are used, allowing you to use AVRDUDE and Atmel Studio 7 side-by-side, without switch drivers.
+This build does not rely on **libusb** drivers. Instead the default Atmel drivers can be used, allowing you to use AVRDUDE and Atmel Studio 7 side-by-side, without switching drivers.
 
 If you previously changed the driver of your programmer to libusb, you should use **Windows Device Manager** to uninstall the device, and then reinstall using the default Windows drivers.
 
@@ -46,11 +48,11 @@ The Micronucleus bootloader is typically used on small ATtiny boards, such as **
 By default, it uses the USB VID/PID **16D0:0753** (MCS Digistump).
 
 Since this bootloader is optimized for size, it implements writing to flash memory only.
-As it does not support reading, use the -V option to prevent AVRDUDE from verifing the flash memory. To have AVRDUDE wait for the device to be connected, use the extended option '-x wait'.
+As it does not support reading, you need to use the **-V** option to prevent AVRDUDE from verifing the flash memory. To have AVRDUDE wait for the device to be connected, use the extended option '-x wait'.
 
 #### Example: Flashing a Micronucleus bootloader device
 
-```bash
+```console
 avrdude -c micronucleus -p t85 -x wait -V -U flash:w:main.hex:i
 ```
 
@@ -59,7 +61,7 @@ avrdude -c micronucleus -p t85 -x wait -V -U flash:w:main.hex:i
 This build adds support for the [Teensy HalfKay bootloader](https://www.pjrc.com/teensy/halfkay_protocol.html), so you do no longer need a the Teensy Loader tool when working with Teensy devices.
 
 Since this bootloader is optimized for size, it implements writing to flash memory only.
-As it does not support reading, use the -V option to prevent AVRDUDE from verifing the flash memory. To have AVRDUDE wait for the device to be connected, use the extended option '-x wait'.
+As it does not support reading, you need to use the **-V** option to prevent AVRDUDE from verifing the flash memory. To have AVRDUDE wait for the device to be connected, use the extended option '-x wait'.
 
 Supported devices are:
 
@@ -70,40 +72,41 @@ Supported devices are:
 
 #### Example: Flashing a Teensy 2.0 device
 
-```bash
+```console
 avrdude -c teensy -p m32u4 -x wait -V -U flash:w:main.hex:i
 ```
 
 ### Support COM port discovery via USB VID/PID
 
-Most Arduino boards include a USB based virtual COM port, which is connected to some sort of bootloader. Since COM port numbers (COM1, COM2, ...) are determined by Windows, you first need to use Windows device manager to figure out the COM port before you can use AVRDUDE to flash the board. Alternatively, you may use Windows device manager to assign a COM port of your choice to the USB device.
+Most Arduino boards use a USB-based virtual COM port, which is connected to some sort of bootloader. Since COM port numbers (COM1, COM2, ...) are determined by Windows, you first need to use Windows device manager to figure out the COM port before you can use AVRDUDE to flash the board. Alternatively, you may use Windows device manager to assign a COM port of your choice to the USB device. Additionally, the COM port of your Arduino board may change over time, for instance if you plug the device in a different USB port.
 
-However, the COM port of your Arduino board may change over time, for instance if you plug the device in a different USB port. Instead of specifing a COM port, I provided the possibility to specify the USB vendor and product ID.
+To simplify the discovery of your Arduino board, I provided the possibility to specify the USB vendor and product ID instead of the COM port.
+
+For instance, to connect to an Arduino Leonardo, use the following command:
+
+```console
+avrdude -c avr109 -P usb:2341:0036 -p m32u4
+```
+
+Since the USB vendor and device ID **2341:0036** is the identical for all Leonardo boards, the command above will work regardless of which COM port was actually assigned to your board.
 
 Note that can cannot use this method if you have more than one device of the same type (i.e. that share the same USB VID/PID) plugged into your computer. Also, some devices ship various versions of firmwares using different VID/PID.
 
 To figure out the USB VID and PID, you may use **Windows devices manager** (see the **Hardware IDs** of the **Details tab** of the USB device), or look it up in the official list of Arduino devices:
 <https://github.com/arduino/ArduinoCore-avr/blob/master/boards.txt>
 
-USB VID/PID pairs for popular boards are:
+USB VID/PID pairs for some popular boards and the respective commands are:
 
-- Arduino Micro: **2341:0037**
-- Arduino Leonardo: **2341:0036**
-- Sparkfun Pro Micro (5V): **1B4F:9205**
-- Sparkfun Pro Micro (3.3V): **1B4F:9203**
-- Adafruit Circuit Playground: **239A:0011**
-
-#### Example: Using the '-P' option with a USB PID:VID pair
-
-For instance, to flash an Arduino Leonardo, you may use the following command:
-
-```bash
-avrdude -c avr109 -P usb:2341:0036 -p m32u4 -U flash:w:main.hex:i
-```
+- Arduino Uno Rev 3: **2A03:0043** -> `avrdude -c arduino -P usb:2A03:0043 -p m328p`
+- Arduino Micro: **2341:0037** -> `avrdude -c avr109 -P usb:2341:0037 -p m32u4`
+- Arduino Leonardo: **2341:0036** -> `avrdude -c avr109 -P usb:2341:0036 -p m32u4`
+- Sparkfun Pro Micro (5V): **1B4F:9205** -> `avrdude -c avr109 -P usb:1B4F:9205 -p m32u4`
+- Sparkfun Pro Micro (3.3V): **1B4F:9203** -> `avrdude -c avr109 -P usb:1B4F:9203 -p m32u4`
+- Adafruit Circuit Playground: **239A:0011** -> `avrdude -c avr109 -P usb:239A:0011 -p m32u4`
 
 ### Support Arduino Leonardo bootloader auto-reset
 
-Before any Arduino board may be flashed via the bootloader, you need to kick it into bootloader mode first. This can done manually by pressing the reset button, or automatically via an special auto-reset mechanism: For boards with a USB to serial converter chip (such as Arduino Uno or Nano), you need to pull the DTR signal to low, which will briefly pull the RESET pin of the microcontroller to low. For boards with a direct USB connection (such as Arduino Leonardo or Micro), the sketch typically implements a serial port via a USB composite device with a virtual COM port. In the latter case, the sketch implements a hack that resets the device into bootloader mode when the COM port is opened with a baudrate of 1200bps. To make matters even more complicated, the bootloader COM port has a different USB VID:PID pair than the sketch COM port, which causes the COM port to change, too.
+Before any Arduino board may be flashed via the bootloader, you need to kick it into bootloader mode first. This can done manually by pressing the reset button, or automatically via an special auto-reset mechanism: For boards with a USB to serial converter chip (such as Arduino Uno or Nano), the tool needs to pull the DTR signal to low, which will briefly pull the RESET pin of the microcontroller to low. For boards with a direct USB connection (such as Arduino Leonardo or Micro), the sketch typically implements a serial port via a USB composite device with a virtual COM port. To perform the auto-reset, the sketch implements a hack that resets the device into bootloader mode when the COM port is opened with a baudrate of 1200bps. To make matters even more complicated, the bootloader COM port has a different USB VID:PID pair than the sketch COM port, which causes the COM port to change while performing the reset.
 
 To simplify the process of auto-resetting the board, this version will auto-reset the device when AVRDUDE detects that the device is running in sketch mode. Note that the sketch is required to implement a USB composite device with a virtual COM port with a matching USB VID:PID, which is implemented in the Arduino core software.
 
@@ -117,7 +120,7 @@ This build contains a custom library called **libwinusb**, which implements a su
 
 - Many USB devices that ship with WinUSB drivers, such as Atmel programmer, will run out of the box.
 - Works with both WinUSB and libusb: You can use either Windows built-in WinUSB driver to access your USB devices, or keep using the libusb drivers if you have them installed already.
-- No static dependency to libusb0.dll: You cannot run AVRDUDE, unless you previously installed libusb. This eliminates the error "The code execution cannot proceed because libusb0.dll was not found. Reinstalling the program may fix this problem".
+- No static dependency to libusb0.dll: You cannot run the original version AVRDUDE, unless you previously installed libusb. On systems where libusb is not installed, this build eliminates the error "The code execution cannot proceed because libusb0.dll was not found. Reinstalling the program may fix this problem".
 
 #### Microsoft OS descriptors and firmware examples
 
@@ -193,7 +196,7 @@ Note that the AVRDUDE for Linux version does not contain all extra Windows featu
 
 In order to build AVRDUDE on Linux, you need to install the following packages:
 
-```bash
+```console
 sudo apt install git make gcc automake libtool flex bison libelf-dev libusb-dev libftdi1-dev libhidapi-dev
 ```
 
@@ -201,8 +204,8 @@ sudo apt install git make gcc automake libtool flex bison libelf-dev libusb-dev 
 
 To build AVRDUDE on Linux, run the following commands:
 
-```bash
-git clone --branch linux https://github.com/mariusgreuel/avrdude
+```console
+git clone --branch windows https://github.com/mariusgreuel/avrdude
 cd avrdude
 ./bootstrap
 ./configure
@@ -211,7 +214,7 @@ make
 
 To install a local build of AVRDUDE on your system, run the following command:
 
-```bash
+```console
 sudo make install
 ```
 
@@ -221,7 +224,7 @@ If you intent to use either the Micronucleus or Teensy bootloader, you should ed
 
 For instance, if you are on Ubuntu and you installed the avrdude package, you would edit `/lib/udev/rules.d/60-avrdude.rules` and add the following rules:
 
-```bash
+```console
 # Micronucleus Bootloader
 SUBSYSTEM=="usb", ATTR{idVendor}=="16d0", ATTR{idProduct}=="0753", TAG+="uaccess"
 # Teensy Bootloader
