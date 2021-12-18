@@ -5,19 +5,13 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "avrdude", "avrdude.vcxproj", "{718DDC4C-324E-485F-BE18-2D211659A2F4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libelf", "external\libelf\libelf.vcxproj", "{A2D07885-A0D1-473B-83B2-209CD008EE8F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libelf", "..\external\libelf\libelf.vcxproj", "{A2D07885-A0D1-473B-83B2-209CD008EE8F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhidapi", "external\libhidapi\libhidapi.vcxproj", "{17054837-6AE6-44D7-914D-9625EDEF4657}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhidapi", "..\external\libhidapi\libhidapi.vcxproj", "{17054837-6AE6-44D7-914D-9625EDEF4657}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libusb", "external\libusb\libusb.vcxproj", "{22615EC5-9DBC-4538-9C01-2CD535B3810B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libusb", "..\external\libusb\libusb.vcxproj", "{22615EC5-9DBC-4538-9C01-2CD535B3810B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libftdi1", "external\libftdi1\libftdi1.vcxproj", "{632649AB-A351-46D4-A81F-1D6E9A819A5C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{743FA5F6-A0D7-46F7-B73D-632B64C732FB}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		.travis.yml = .travis.yml
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libftdi1", "..\external\libftdi1\libftdi1.vcxproj", "{632649AB-A351-46D4-A81F-1D6E9A819A5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

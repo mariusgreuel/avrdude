@@ -84,7 +84,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;..\external\libelf\include;..\external\libusb\include;..\external\libhidapi\include;..\external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -99,7 +99,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;..\external\libelf\include;..\external\libusb\include;..\external\libhidapi\include;..\external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -114,7 +114,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;..\external\libelf\include;..\external\libusb\include;..\external\libhidapi\include;..\external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -134,7 +134,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32NATIVE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;LOG_APPNAME="avrdude";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>msvc;msvc\generated;.;external\libelf\include;external\libusb\include;external\libhidapi\include;external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>msvc;msvc\generated;.;..\external\libelf\include;..\external\libusb\include;..\external\libhidapi\include;..\external\libftdi1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -276,20 +276,6 @@
     <ClInclude Include="msvc\usb_com_locator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="external\libelf\libelf.vcxproj">
-      <Project>{a2d07885-a0d1-473b-83b2-209cd008ee8f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="external\libftdi1\libftdi1.vcxproj">
-      <Project>{632649ab-a351-46d4-a81f-1d6e9a819a5c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="external\libhidapi\libhidapi.vcxproj">
-      <Project>{17054837-6ae6-44d7-914d-9625edef4657}</Project>
-    </ProjectReference>
-    <ProjectReference Include="external\libusb\libusb.vcxproj">
-      <Project>{22615ec5-9dbc-4538-9c01-2cd535b3810b}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="msvc\avrdude.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -299,6 +285,20 @@
     <None Include="msvc\res\version.rc2">
       <FileType>Text</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\external\libelf\libelf.vcxproj">
+      <Project>{a2d07885-a0d1-473b-83b2-209cd008ee8f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\external\libftdi1\libftdi1.vcxproj">
+      <Project>{632649ab-a351-46d4-a81f-1d6e9a819a5c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\external\libhidapi\libhidapi.vcxproj">
+      <Project>{17054837-6ae6-44d7-914d-9625edef4657}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\external\libusb\libusb.vcxproj">
+      <Project>{22615ec5-9dbc-4538-9c01-2cd535b3810b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
