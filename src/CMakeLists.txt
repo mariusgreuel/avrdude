@@ -317,6 +317,7 @@ if(MSVC)
         "${PROJECT_SOURCE_DIR}/msvc/getopt.c"
         "${PROJECT_SOURCE_DIR}/msvc/gettimeofday.c"
         "${PROJECT_SOURCE_DIR}/msvc/usleep.cpp"
+        "${PROJECT_SOURCE_DIR}/msvc/usb_com_helper.cpp"
         )
     set(EXTRA_WINDOWS_INCLUDES ${EXTRA_WINDOWS_INCLUDES}
         "${PROJECT_SOURCE_DIR}/msvc"
