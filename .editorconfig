@@ -4,14 +4,14 @@ root = true
 
 [{CMakeLists.txt,*.cmake}]
 charset = utf-8
-tab_width = 4
+tab_width = 8
 indent_size = 4
 indent_style = space
 trim_trailing_whitespace = true
 
 [{bootstrap,configure.ac,avrdude.spec.in,Makefile.am}]
 charset = utf-8
-tab_width = 4
+tab_width = 8
 indent_size = 4
 indent_style = tab
 
@@ -20,7 +20,7 @@ indent_size = 4
 indent_style = space
 
 [*.{c,h,cpp,y}]
-tab_width = 4
+tab_width = 8
 indent_size = 4
 indent_style = space
 insert_final_newline = true
