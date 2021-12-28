@@ -132,7 +132,7 @@ static void usage(void)
  "  -q                         Quell progress output. -q -q for less.\n"
  "  -l logfile                 Use logfile rather than stderr for diagnostics.\n"
  "  -?                         Display this usage.\n"
- "\navrdude version %s, URL: <https://github.com/avrdudes/avrdude>\n"
+ "\navrdude version %s, URL: <https://github.com/mariusgreuel/avrdude>\n"
           ,progname, version);
 }
 
@@ -364,6 +364,10 @@ int main(int argc, char * argv [])
   int fuses_updated = 0;
 #if !defined(WIN32)
   char  * homedir;
+#endif
+
+#ifdef _MSC_VER
+  _set_printf_count_output(1);
 #endif
 
   /*
