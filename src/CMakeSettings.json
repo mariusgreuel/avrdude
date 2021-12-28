@@ -1,0 +1,126 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x86-Debug",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "DEBUG_CMAKE",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "USE_EXTERNAL",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "x86-Release",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "DEBUG_CMAKE",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "USE_EXTERNAL",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /GL /Zi /O2 /Ob1 /DNDEBUG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /GL /Zi /O2 /Ob1 /DNDEBUG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO",
+          "value": "/debug /INCREMENTAL:NO /LTCG /OPT:REF /OPT:ICF",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64-Debug",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "DEBUG_CMAKE",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "USE_EXTERNAL",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "DEBUG_CMAKE",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "USE_EXTERNAL",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /GL /Zi /O2 /Ob1 /DNDEBUG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /GL /Zi /O2 /Ob1 /DNDEBUG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO",
+          "value": "/debug /INCREMENTAL:NO /LTCG /OPT:REF /OPT:ICF",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}
