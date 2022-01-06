@@ -56,7 +56,7 @@ the 74HC244. Have a look at http://kolev.info/avrdude-linuxgpio for a more
 detailed tutorial about using this programmer type.
 
 Under a Linux installation with direct access to the SPI bus and GPIO
-pins, such as would be found on a Raspberry Pi, the 'linuxspi'
+pins, such as would be found on a Raspberry Pi, the ``linuxspi``
 programmer type can be used to directly connect to and program a chip
 using the built in interfaces on the computer. The requirements to use
 this type are that an SPI interface is exposed along with one GPIO
@@ -83,20 +83,21 @@ be used as GND.
 
 A typical programming cable would then look like:
 
-@multitable @columnfractions .15 .15 .3
-* `J8 pin` @tab `ISP pin` @tab `Name`
-* `21`     @tab `1`   @tab `MISO`
-* `-`      @tab `2`   @tab `Vcc - leave open`
-* `23`     @tab `3`   @tab `SCK`
-* `19`     @tab `4`   @tab `MOSI`
-* `22`     @tab `5`   @tab `/RESET`
-* `25`     @tab `6`   @tab `GND`
-@end multitable
+======== ========= ==================
+ J8 pin   ISP pin   Name             
+======== ========= ==================
+ 21       1         MISO             
+ -        2         Vcc - leave open 
+ 23       3         SCK              
+ 19       4         MOSI             
+ 22       5         /RESET           
+ 25       6         GND              
+======== ========= ==================
 
 (Mind the 3.3 V voltage level of the Raspberry Pi!)
 
 The `-P `portname`` option defaults to
-`/dev/spidev0.0:/dev/gpiochip0` for this programmer.
+``/dev/spidev0.0:/dev/gpiochip0`` for this programmer.
 
 The STK500, JTAG ICE, avr910, and avr109/butterfly use the serial port to communicate with the PC.
 The STK600, JTAG ICE mkII/3, AVRISP mkII, USBasp, avrftdi (and derivatives), and USBtinyISP

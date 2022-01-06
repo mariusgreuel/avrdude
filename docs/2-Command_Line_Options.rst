@@ -25,6 +25,7 @@ following options are recognized:
 
 
 *-p `partno`*
+
   This is the only mandatory option and it tells AVRDUDE what type of part
   (MCU) that is connected to the programmer.  The `partno` parameter
   is the part's id listed in the configuration file.  Specify -p ? to list
@@ -34,472 +35,242 @@ following options are recognized:
   datasheet so that you can enter the programming specifications.
   Currently, the following MCU types are understood:
 
-  @multitable @columnfractions .15 .3
-
-*`uc3a0512` @tab AT32UC3A0512*
-
-*`c128` @tab AT90CAN128*
-
-*`c32` @tab AT90CAN32*
-
-*`c64` @tab AT90CAN64*
-
-*`pwm2` @tab AT90PWM2*
-
-*`pwm216` @tab AT90PWM216*
-
-*`pwm2b` @tab AT90PWM2B*
-
-*`pwm3` @tab AT90PWM3*
-
-*`pwm316` @tab AT90PWM316*
-
-*`pwm3b` @tab AT90PWM3B*
-
-*`1200` @tab AT90S1200 (****)*
-
-*`2313` @tab AT90S2313*
-
-*`2333` @tab AT90S2333*
-
-*`2343` @tab AT90S2343 (*)*
-
-*`4414` @tab AT90S4414*
-
-*`4433` @tab AT90S4433*
-
-*`4434` @tab AT90S4434*
-
-*`8515` @tab AT90S8515*
-
-*`8535` @tab AT90S8535*
-
-*`usb1286` @tab AT90USB1286*
-
-*`usb1287` @tab AT90USB1287*
-
-*`usb162` @tab AT90USB162*
-
-*`usb646` @tab AT90USB646*
-
-*`usb647` @tab AT90USB647*
-
-*`usb82` @tab AT90USB82*
-
-*`m103` @tab ATmega103*
-
-*`m128` @tab ATmega128*
-
-*`m1280` @tab ATmega1280*
-
-*`m1281` @tab ATmega1281*
-
-*`m1284` @tab ATmega1284*
-
-*`m1284p` @tab ATmega1284P*
-
-*`m1284rfr2` @tab ATmega1284RFR2*
-
-*`m128rfa1` @tab ATmega128RFA1*
-
-*`m128rfr2` @tab ATmega128RFR2*
-
-*`m16` @tab ATmega16*
-
-*`m1608` @tab ATmega1608*
-
-*`m1609` @tab ATmega1609*
-
-*`m161` @tab ATmega161*
-
-*`m162` @tab ATmega162*
-
-*`m163` @tab ATmega163*
-
-*`m164p` @tab ATmega164P*
-
-*`m168` @tab ATmega168*
-
-*`m168p` @tab ATmega168P*
-
-*`m168pb` @tab ATmega168PB*
-
-*`m169` @tab ATmega169*
-
-*`m16u2` @tab ATmega16U2*
-
-*`m2560` @tab ATmega2560 (**)*
-
-*`m2561` @tab ATmega2561 (**)*
-
-*`m2564rfr2` @tab ATmega2564RFR2*
-
-*`m256rfr2` @tab ATmega256RFR2*
-
-*`m32` @tab ATmega32*
-
-*`m3208` @tab ATmega3208*
-
-*`m3209` @tab ATmega3209*
-
-*`m324a` @tab ATmega324A*
-
-*`m324p` @tab ATmega324P*
-
-*`m324pa` @tab ATmega324PA*
-
-*`m324pb` @tab ATmega324PB*
-
-*`m325` @tab ATmega325*
-
-*`m3250` @tab ATmega3250*
-
-*`m328` @tab ATmega328*
-
-*`m328p` @tab ATmega328P*
-
-*`m328pb` @tab ATmega328PB*
-
-*`m329` @tab ATmega329*
-
-*`m3290` @tab ATmega3290*
-
-*`m3290p` @tab ATmega3290P*
-
-*`m329p` @tab ATmega329P*
-
-*`m32m1` @tab ATmega32M1*
-
-*`m32u2` @tab ATmega32U2*
-
-*`m32u4` @tab ATmega32U4*
-
-*`m406` @tab ATMEGA406*
-
-*`m48` @tab ATmega48*
-
-*`m4808` @tab ATmega4808*
-
-*`m4809` @tab ATmega4809*
-
-*`m48p` @tab ATmega48P*
-
-*`m48pb` @tab ATmega48PB*
-
-*`m64` @tab ATmega64*
-
-*`m640` @tab ATmega640*
-
-*`m644` @tab ATmega644*
-
-*`m644p` @tab ATmega644P*
-
-*`m644rfr2` @tab ATmega644RFR2*
-
-*`m645` @tab ATmega645*
-
-*`m6450` @tab ATmega6450*
-
-*`m649` @tab ATmega649*
-
-*`m6490` @tab ATmega6490*
-
-*`m64m1` @tab ATmega64M1*
-
-*`m64rfr2` @tab ATmega64RFR2*
-
-*`m8` @tab ATmega8*
-
-*`m808` @tab ATmega808*
-
-*`m809` @tab ATmega809*
-
-*`m8515` @tab ATmega8515*
-
-*`m8535` @tab ATmega8535*
-
-*`m88` @tab ATmega88*
-
-*`m88p` @tab ATmega88P*
-
-*`m88pb` @tab ATmega88PB*
-
-*`m8a` @tab ATmega8A*
-
-*`m8u2` @tab ATmega8U2*
-
-*`t10` @tab ATtiny10*
-
-*`t11` @tab ATtiny11 (***)*
-
-*`t12` @tab ATtiny12*
-
-*`t13` @tab ATtiny13*
-
-*`t15` @tab ATtiny15*
-
-*`t1604` @tab ATtiny1604*
-
-*`t1606` @tab ATtiny1606*
-
-*`t1607` @tab ATtiny1607*
-
-*`t1614` @tab ATtiny1614*
-
-*`t1616` @tab ATtiny1616*
-
-*`t1617` @tab ATtiny1617*
-
-*`t1624` @tab ATtiny1624*
-
-*`t1626` @tab ATtiny1626*
-
-*`t1627` @tab ATtiny1627*
-
-*`t1634` @tab ATtiny1634*
-
-*`t20` @tab ATtiny20*
-
-*`t202` @tab ATtiny202*
-
-*`t204` @tab ATtiny204*
-
-*`t212` @tab ATtiny212*
-
-*`t214` @tab ATtiny214*
-
-*`t2313` @tab ATtiny2313*
-
-*`t24` @tab ATtiny24*
-
-*`t25` @tab ATtiny25*
-
-*`t26` @tab ATtiny26*
-
-*`t261` @tab ATtiny261*
-
-*`t28` @tab ATtiny28*
-
-*`t3216` @tab ATtiny3216*
-
-*`t3217` @tab ATtiny3217*
-
-*`t4` @tab ATtiny4*
-
-*`t40` @tab ATtiny40*
-
-*`t402` @tab ATtiny402*
-
-*`t404` @tab ATtiny404*
-
-*`t406` @tab ATtiny406*
-
-*`t412` @tab ATtiny412*
-
-*`t414` @tab ATtiny414*
-
-*`t416` @tab ATtiny416*
-
-*`t417` @tab ATtiny417*
-
-*`t424` @tab ATtiny424*
-
-*`t426` @tab ATtiny426*
-
-*`t427` @tab ATtiny427*
-
-*`t4313` @tab ATtiny4313*
-
-*`t43u` @tab ATtiny43u*
-
-*`t44` @tab ATtiny44*
-
-*`t441` @tab ATtiny441*
-
-*`t45` @tab ATtiny45*
-
-*`t461` @tab ATtiny461*
-
-*`t5` @tab ATtiny5*
-
-*`t804` @tab ATtiny804*
-
-*`t806` @tab ATtiny806*
-
-*`t807` @tab ATtiny807*
-
-*`t814` @tab ATtiny814*
-
-*`t816` @tab ATtiny816*
-
-*`t817` @tab ATtiny817*
-
-*`t824` @tab ATtiny824*
-
-*`t826` @tab ATtiny826*
-
-*`t827` @tab ATtiny827*
-
-*`t84` @tab ATtiny84*
-
-*`t841` @tab ATtiny841*
-
-*`t85` @tab ATtiny85*
-
-*`t861` @tab ATtiny861*
-
-*`t88` @tab ATtiny88*
-
-*`t9` @tab ATtiny9*
-
-*`x128a1` @tab ATxmega128A1*
-
-*`x128a1d` @tab ATxmega128A1revD*
-
-*`x128a1u` @tab ATxmega128A1U*
-
-*`x128a3` @tab ATxmega128A3*
-
-*`x128a3u` @tab ATxmega128A3U*
-
-*`x128a4` @tab ATxmega128A4*
-
-*`x128a4u` @tab ATxmega128A4U*
-
-*`x128b1` @tab ATxmega128B1*
-
-*`x128b3` @tab ATxmega128B3*
-
-*`x128c3` @tab ATxmega128C3*
-
-*`x128d3` @tab ATxmega128D3*
-
-*`x128d4` @tab ATxmega128D4*
-
-*`x16a4` @tab ATxmega16A4*
-
-*`x16a4u` @tab ATxmega16A4U*
-
-*`x16c4` @tab ATxmega16C4*
-
-*`x16d4` @tab ATxmega16D4*
-
-*`x16e5` @tab ATxmega16E5*
-
-*`x192a1` @tab ATxmega192A1*
-
-*`x192a3` @tab ATxmega192A3*
-
-*`x192a3u` @tab ATxmega192A3U*
-
-*`x192c3` @tab ATxmega192C3*
-
-*`x192d3` @tab ATxmega192D3*
-
-*`x256a1` @tab ATxmega256A1*
-
-*`x256a3` @tab ATxmega256A3*
-
-*`x256a3b` @tab ATxmega256A3B*
-
-*`x256a3bu` @tab ATxmega256A3BU*
-
-*`x256a3u` @tab ATxmega256A3U*
-
-*`x256c3` @tab ATxmega256C3*
-
-*`x256d3` @tab ATxmega256D3*
-
-*`x32a4` @tab ATxmega32A4*
-
-*`x32a4u` @tab ATxmega32A4U*
-
-*`x32c4` @tab ATxmega32C4*
-
-*`x32d4` @tab ATxmega32D4*
-
-*`x32e5` @tab ATxmega32E5*
-
-*`x384c3` @tab ATxmega384C3*
-
-*`x384d3` @tab ATxmega384D3*
-
-*`x64a1` @tab ATxmega64A1*
-
-*`x64a1u` @tab ATxmega64A1U*
-
-*`x64a3` @tab ATxmega64A3*
-
-*`x64a3u` @tab ATxmega64A3U*
-
-*`x64a4` @tab ATxmega64A4*
-
-*`x64a4u` @tab ATxmega64A4U*
-
-*`x64b1` @tab ATxmega64B1*
-
-*`x64b3` @tab ATxmega64B3*
-
-*`x64c3` @tab ATxmega64C3*
-
-*`x64d3` @tab ATxmega64D3*
-
-*`x64d4` @tab ATxmega64D4*
-
-*`x8e5` @tab ATxmega8E5*
-
-*`avr128da28` @tab AVR128DA28*
-
-*`avr128da32` @tab AVR128DA32*
-
-*`avr128da48` @tab AVR128DA48*
-
-*`avr128da64` @tab AVR128DA64*
-
-*`avr128db28` @tab AVR128DB28*
-
-*`avr128db32` @tab AVR128DB32*
-
-*`avr128db48` @tab AVR128DB48*
-
-*`avr128db64` @tab AVR128DB64*
-
-*`avr32da28` @tab AVR32DA28*
-
-*`avr32da32` @tab AVR32DA32*
-
-*`avr32da48` @tab AVR32DA48*
-
-*`avr32db28` @tab AVR32DB28*
-
-*`avr32db32` @tab AVR32DB32*
-
-*`avr32db48` @tab AVR32DB48*
-
-*`avr64da28` @tab AVR64DA28*
-
-*`avr64da32` @tab AVR64DA32*
-
-*`avr64da48` @tab AVR64DA48*
-
-*`avr64da64` @tab AVR64DA64*
-
-*`avr64db28` @tab AVR64DB28*
-
-*`avr64db32` @tab AVR64DB32*
-
-*`avr64db48` @tab AVR64DB48*
-
-*`avr64db64` @tab AVR64DB64*
-
-*`ucr2` @tab deprecated,*
-
-*`lgt8fx168p` @tab LGT8FX168P*
-
-*`lgt8fx328p` @tab LGT8FX328P*
-
-*`lgt8fx88p` @tab LGT8FX88P*
-  @end multitable
+==========  ==================
+Name        Part
+==========  ==================
+uc3a0512    AT32UC3A0512
+c128        AT90CAN128
+c32         AT90CAN32
+c64         AT90CAN64
+pwm2        AT90PWM2
+pwm216      AT90PWM216
+pwm2b       AT90PWM2B
+pwm3        AT90PWM3
+pwm316      AT90PWM316
+pwm3b       AT90PWM3B
+1200        AT90S1200 (****)
+2313        AT90S2313
+2333        AT90S2333
+2343        AT90S2343 (*)
+4414        AT90S4414
+4433        AT90S4433
+4434        AT90S4434
+8515        AT90S8515
+8535        AT90S8535
+usb1286     AT90USB1286
+usb1287     AT90USB1287
+usb162      AT90USB162
+usb646      AT90USB646
+usb647      AT90USB647
+usb82       AT90USB82
+m103        ATmega103
+m128        ATmega128
+m1280       ATmega1280
+m1281       ATmega1281
+m1284       ATmega1284
+m1284p      ATmega1284P
+m1284rfr2   ATmega1284RFR2
+m128rfa1    ATmega128RFA1
+m128rfr2    ATmega128RFR2
+m16         ATmega16
+m1608       ATmega1608
+m1609       ATmega1609
+m161        ATmega161
+m162        ATmega162
+m163        ATmega163
+m164p       ATmega164P
+m168        ATmega168
+m168p       ATmega168P
+m168pb      ATmega168PB
+m169        ATmega169
+m16u2       ATmega16U2
+m2560       ATmega2560 (**)
+m2561       ATmega2561 (**)
+m2564rfr2   ATmega2564RFR2
+m256rfr2    ATmega256RFR2
+m32         ATmega32
+m3208       ATmega3208
+m3209       ATmega3209
+m324a       ATmega324A
+m324p       ATmega324P
+m324pa      ATmega324PA
+m324pb      ATmega324PB
+m325        ATmega325
+m3250       ATmega3250
+m328        ATmega328
+m328p       ATmega328P
+m328pb      ATmega328PB
+m329        ATmega329
+m3290       ATmega3290
+m3290p      ATmega3290P
+m329p       ATmega329P
+m32m1       ATmega32M1
+m32u2       ATmega32U2
+m32u4       ATmega32U4
+m406        ATMEGA406
+m48         ATmega48
+m4808       ATmega4808
+m4809       ATmega4809
+m48p        ATmega48P
+m48pb       ATmega48PB
+m64         ATmega64
+m640        ATmega640
+m644        ATmega644
+m644p       ATmega644P
+m644rfr2    ATmega644RFR2
+m645        ATmega645
+m6450       ATmega6450
+m649        ATmega649
+m6490       ATmega6490
+m64m1       ATmega64M1
+m64rfr2     ATmega64RFR2
+m8          ATmega8
+m808        ATmega808
+m809        ATmega809
+m8515       ATmega8515
+m8535       ATmega8535
+m88         ATmega88
+m88p        ATmega88P
+m88pb       ATmega88PB
+m8a         ATmega8A
+m8u2        ATmega8U2
+t10         ATtiny10
+t11         ATtiny11 (***)
+t12         ATtiny12
+t13         ATtiny13
+t15         ATtiny15
+t1604       ATtiny1604
+t1606       ATtiny1606
+t1607       ATtiny1607
+t1614       ATtiny1614
+t1616       ATtiny1616
+t1617       ATtiny1617
+t1624       ATtiny1624
+t1626       ATtiny1626
+t1627       ATtiny1627
+t1634       ATtiny1634
+t20         ATtiny20
+t202        ATtiny202
+t204        ATtiny204
+t212        ATtiny212
+t214        ATtiny214
+t2313       ATtiny2313
+t24         ATtiny24
+t25         ATtiny25
+t26         ATtiny26
+t261        ATtiny261
+t28         ATtiny28
+t3216       ATtiny3216
+t3217       ATtiny3217
+t4          ATtiny4
+t40         ATtiny40
+t402        ATtiny402
+t404        ATtiny404
+t406        ATtiny406
+t412        ATtiny412
+t414        ATtiny414
+t416        ATtiny416
+t417        ATtiny417
+t424        ATtiny424
+t426        ATtiny426
+t427        ATtiny427
+t4313       ATtiny4313
+t43u        ATtiny43u
+t44         ATtiny44
+t441        ATtiny441
+t45         ATtiny45
+t461        ATtiny461
+t5          ATtiny5
+t804        ATtiny804
+t806        ATtiny806
+t807        ATtiny807
+t814        ATtiny814
+t816        ATtiny816
+t817        ATtiny817
+t824        ATtiny824
+t826        ATtiny826
+t827        ATtiny827
+t84         ATtiny84
+t841        ATtiny841
+t85         ATtiny85
+t861        ATtiny861
+t88         ATtiny88
+t9          ATtiny9
+x128a1      ATxmega128A1
+x128a1d     ATxmega128A1revD
+x128a1u     ATxmega128A1U
+x128a3      ATxmega128A3
+x128a3u     ATxmega128A3U
+x128a4      ATxmega128A4
+x128a4u     ATxmega128A4U
+x128b1      ATxmega128B1
+x128b3      ATxmega128B3
+x128c3      ATxmega128C3
+x128d3      ATxmega128D3
+x128d4      ATxmega128D4
+x16a4       ATxmega16A4
+x16a4u      ATxmega16A4U
+x16c4       ATxmega16C4
+x16d4       ATxmega16D4
+x16e5       ATxmega16E5
+x192a1      ATxmega192A1
+x192a3      ATxmega192A3
+x192a3u     ATxmega192A3U
+x192c3      ATxmega192C3
+x192d3      ATxmega192D3
+x256a1      ATxmega256A1
+x256a3      ATxmega256A3
+x256a3b     ATxmega256A3B
+x256a3bu    ATxmega256A3BU
+x256a3u     ATxmega256A3U
+x256c3      ATxmega256C3
+x256d3      ATxmega256D3
+x32a4       ATxmega32A4
+x32a4u      ATxmega32A4U
+x32c4       ATxmega32C4
+x32d4       ATxmega32D4
+x32e5       ATxmega32E5
+x384c3      ATxmega384C3
+x384d3      ATxmega384D3
+x64a1       ATxmega64A1
+x64a1u      ATxmega64A1U
+x64a3       ATxmega64A3
+x64a3u      ATxmega64A3U
+x64a4       ATxmega64A4
+x64a4u      ATxmega64A4U
+x64b1       ATxmega64B1
+x64b3       ATxmega64B3
+x64c3       ATxmega64C3
+x64d3       ATxmega64D3
+x64d4       ATxmega64D4
+x8e5        ATxmega8E5
+avr128da28  AVR128DA28
+avr128da32  AVR128DA32
+avr128da48  AVR128DA48
+avr128da64  AVR128DA64
+avr128db28  AVR128DB28
+avr128db32  AVR128DB32
+avr128db48  AVR128DB48
+avr128db64  AVR128DB64
+avr32da28   AVR32DA28
+avr32da32   AVR32DA32
+avr32da48   AVR32DA48
+avr32db28   AVR32DB28
+avr32db32   AVR32DB32
+avr32db48   AVR32DB48
+avr64da28   AVR64DA28
+avr64da32   AVR64DA32
+avr64da48   AVR64DA48
+avr64da64   AVR64DA64
+avr64db28   AVR64DB28
+avr64db32   AVR64DB32
+avr64db48   AVR64DB48
+avr64db64   AVR64DB64
+ucr2        deprecated,
+lgt8fx168p  LGT8FX168P
+lgt8fx328p  LGT8FX328P
+lgt8fx88p   LGT8FX88P
+==========  ==================
 
   (*)   The AT90S2323 and ATtiny22 use the same algorithm.
 
