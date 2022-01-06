@@ -25,7 +25,7 @@ on:
 
 jobs:
   build:
-    uses: avrdudes/avrdude/.github/workflows/build.yml@main
+    uses: mariusgreuel/avrdude/.github/workflows/build.yml@main
 
   release:
     needs: build
@@ -53,6 +53,7 @@ jobs:
         include:
           - { arch: x86 }
           - { arch: x64 }
+          - { arch: arm }
           - { arch: arm64 }
     steps:
       - name: Download artifact

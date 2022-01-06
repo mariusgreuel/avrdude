@@ -1,0 +1,51 @@
+#
+# build_extra.yml - GitHub build action for AVRDUDE
+# Copyright (C) 2021 Marius Greuel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+name: Build Extra
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+
+jobs:
+  freebsd-x86_64:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        id: build
+        uses: vmactions/freebsd-vm@v0.1.5
+        with:
+          prepare: pkg install -y git cmake flex bison libftdi1 hidapi
+          run: |
+            cd src
+            cmake -D DEBUG_CMAKE=1 -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_FLAGS=-I/usr/local/include -D CMAKE_EXE_LINKER_FLAGS=-L/usr/local/lib -B ../build
+            cmake --build ../build
+      - name: Archive build artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: freebsd-x86_64
+          path: |
+            build/
+            !**/*.d
+            !**/*.o
