@@ -1,6 +1,6 @@
 # AVRDUDE for Windows
 
-[![Build Status](https://github.com/mariusgreuel/avrdude/actions/workflows/build_cmake.yml/badge.svg?branch=windows)](https://github.com/mariusgreuel/avrdude/actions/workflows/build_cmake.yml)
+[![Build Status](https://github.com/mariusgreuel/avrdude/actions/workflows/build.yml/badge.svg?branch=windows)](https://github.com/mariusgreuel/avrdude/actions/workflows/build.yml)
 
 This is a fork of AVRDUDE 6.4 from <https://github.com/avrdudes/avrdude>.
 
