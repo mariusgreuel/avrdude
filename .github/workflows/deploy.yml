@@ -25,7 +25,7 @@ on:
 
 jobs:
   build:
-    uses: avrdudes/avrdude/.github/workflows/build.yml@main
+    uses: mariusgreuel/avrdude/.github/workflows/build.yml@windows
 
   release:
     needs: build
