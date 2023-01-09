@@ -21,7 +21,7 @@ name: Deploy
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*-windows'
 
 jobs:
   build:
