@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/mariusgreuel/avrdude/actions/workflows/build.yml/badge.svg?branch=windows)](https://github.com/mariusgreuel/avrdude/actions/workflows/build.yml)
 
-This is a fork of AVRDUDE 7.0 from <https://github.com/avrdudes/avrdude>.
+This is a fork of AVRDUDE from <https://github.com/avrdudes/avrdude>.
 
 The purpose of this fork is to add better support for Windows to bring it on par with the Linux version of AVRDUDE.
 
