@@ -51,16 +51,13 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 add_compile_definitions(CONFIG_DIR=\"${CONFIG_DIR}\")
 
 if(WIN32)
-    set(EXTRA_WINDOWS_SOURCES "${PROJECT_BINARY_DIR}/src/windows.rc")
+    set(EXTRA_WINDOWS_RESOURCES "${PROJECT_BINARY_DIR}/src/windows.rc")
     set(EXTRA_WINDOWS_LIBRARIES setupapi ws2_32)
 endif()
 
-if(NOT WIN32)
-    set(LIB_MATH m)
-    add_compile_options(-Wall) # -Wextra
-endif()
-
 if(MSVC)
+    enable_language(CXX)
+
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS=1)
     add_compile_definitions(_CRT_NONSTDC_NO_WARNINGS=1)
     add_compile_definitions(_WINSOCK_DEPRECATED_NO_WARNINGS=1)
@@ -68,44 +65,68 @@ if(MSVC)
     add_compile_options(/wd4018) # warning C4018: signed/unsigned mismatch
     add_compile_options(/wd4244) # warning C4244: conversion from '...' to '...', possible loss of data
     add_compile_options(/wd4267) # warning C4267: conversion from '...' to '...', possible loss of data
-    add_compile_options(/wd5105) # warning C5105: macro expansion producing 'xxx' has undefined behavior
-    add_compile_options(/wd6255) # warning C6255: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead
 
     set(EXTRA_WINDOWS_SOURCES ${EXTRA_WINDOWS_SOURCES}
         "msvc/getopt.c"
         "msvc/gettimeofday.c"
         "msvc/usleep.cpp"
+        "msvc/readline.cpp"
         "msvc/usb_com_helper.cpp"
         )
     set(EXTRA_WINDOWS_INCLUDES ${EXTRA_WINDOWS_INCLUDES}
         "msvc"
         )
+else()
+    set(LIB_MATH m)
+    add_compile_options(-Wall) # -Wextra
+endif()
+
+# =====================================
+# Setup default port names
+# =====================================
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(DEFAULT_PAR_PORT "/dev/parport0")
+    set(DEFAULT_SER_PORT "/dev/ttyS0")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    set(DEFAULT_PAR_PORT "/dev/ppi0")
+    set(DEFAULT_SER_PORT "/dev/cuad0")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Solaris")
+    set(DEFAULT_PAR_PORT "/dev/printers/0")
+    set(DEFAULT_SER_PORT "/dev/term/a")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(DEFAULT_PAR_PORT "lpt1")
+    set(DEFAULT_SER_PORT "com1")
+else()
+    set(DEFAULT_PAR_PORT "unknown")
+    set(DEFAULT_SER_PORT "unknown")
 endif()
 
 # =====================================
 # Configure files
 # =====================================
 
-macro(configure_option option)
-    if(${${option}})
-        string(REGEX REPLACE "(.*)@${option}_BEGIN@(.*)@${option}_END@(.*)" "\\1\\2\\3" conf_file "${conf_file}")
-    else()
-        string(REGEX REPLACE "(.*)@${option}_BEGIN@(.*)@${option}_END@(.*)" "\\1\\3" conf_file "${conf_file}")
-    endif()
-endmacro()
-
-file(READ avrdude.conf.in conf_file)
-configure_option(HAVE_PARPORT)
-configure_option(HAVE_LINUXGPIO)
-configure_option(HAVE_LINUXSPI)
-file(WRITE "${PROJECT_BINARY_DIR}/avrdude.conf.in" "${conf_file}")
-
 configure_file(cmake_config.h.in ac_cfg.h)
-configure_file("${PROJECT_BINARY_DIR}/avrdude.conf.in" avrdude.conf)
 configure_file(avrdude.spec.in avrdude.spec)
 if(WIN32)
     configure_file(windows.rc.in windows.rc)
 endif()
+
+add_custom_command(
+    OUTPUT avrdude.conf
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/avrdude.conf.in" avrdude.conf.in
+    COMMAND ${CMAKE_COMMAND}
+        -D HAVE_PARPORT=${HAVE_PARPORT}
+        -D HAVE_LINUXSPI=${HAVE_LINUXSPI}
+        -D HAVE_LINUXGPIO=${HAVE_LINUXGPIO}
+        -D DEFAULT_PAR_PORT=${DEFAULT_PAR_PORT}
+        -D DEFAULT_SER_PORT=${DEFAULT_SER_PORT}
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/configure.cmake"
+    DEPENDS avrdude.conf.in
+    VERBATIM
+    )
+
+add_custom_target(conf ALL DEPENDS avrdude.conf)
 
 # =====================================
 # Project
@@ -118,6 +139,7 @@ add_library(libavrdude
     avr.c
     avr910.c
     avr910.h
+    avrcache.c
     avrdude.h
     avrftdi.c
     avrftdi.h
@@ -203,6 +225,10 @@ add_library(libavrdude
     updi_readwrite.h
     updi_state.c
     updi_state.h
+    urclock.c
+    urclock.h
+    urclock_hash.h
+    urclock_private.h
     usbasp.c
     usbasp.h
     usbdevs.h
@@ -217,6 +243,7 @@ add_library(libavrdude
     xbee.c
     ${FLEX_Parser_OUTPUTS}
     ${BISON_Parser_OUTPUTS}
+    "${EXTRA_WINDOWS_SOURCES}"
     )
     
 set_target_properties(libavrdude PROPERTIES
@@ -252,9 +279,14 @@ add_executable(avrdude
     main.c
     term.c
     term.h
+    avrintel.c
+    avrintel.h
+    developer_opts.c
+    developer_opts.h
+    developer_opts_private.h
     whereami.c
     whereami.h
-    "${EXTRA_WINDOWS_SOURCES}"
+    "${EXTRA_WINDOWS_RESOURCES}"
     )
 
 target_link_libraries(avrdude PUBLIC libavrdude)
@@ -265,9 +297,11 @@ target_link_libraries(avrdude PUBLIC libavrdude)
 
 install(TARGETS avrdude DESTINATION bin)
 install(TARGETS libavrdude
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION include COMPONENT dev
     )
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/avrdude.conf" TYPE SYSCONF)
-install(FILES avrdude.1 TYPE MAN)
+install(FILES "avrdude.1"
+	DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+	)

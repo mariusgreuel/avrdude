@@ -76,8 +76,7 @@ static void bitbang_calibrate_delay(void)
   if (QueryPerformanceFrequency(&freq))
   {
     has_perfcount = 1;
-    avrdude_message(MSG_NOTICE2, "%s: Using performance counter for bitbang delays\n",
-                    progname);
+    pmsg_notice2("using performance counter for bitbang delays\n");
   }
   else
   {
@@ -90,16 +89,14 @@ static void bitbang_calibrate_delay(void)
      * auto-calibration figures seen on various Unix systems on
      * comparable hardware.
      */
-    avrdude_message(MSG_NOTICE2, "%s: Using guessed per-microsecond delay count for bitbang delays\n",
-                    progname);
+    pmsg_notice2("using guessed per-microsecond delay count for bitbang delays\n");
     delay_decrement = 100;
   }
 #else  /* !WIN32 */
   struct itimerval itv;
   volatile int i;
 
-  avrdude_message(MSG_NOTICE2, "%s: Calibrating delay loop...",
-                  progname);
+  pmsg_notice2("calibrating delay loop ...");
   i = 0;
   done = 0;
   saved_alarmhandler = signal(SIGALRM, alarmhandler);
@@ -125,7 +122,7 @@ static void bitbang_calibrate_delay(void)
    * Calculate back from 100 ms to 1 us.
    */
   delay_decrement = -i / 100000;
-  avrdude_message(MSG_NOTICE2, " calibrated to %d cycles per us\n",
+  msg_notice2(" calibrated to %d cycles per us\n",
                   delay_decrement);
 #endif /* WIN32 */
 }
@@ -163,8 +160,7 @@ void bitbang_delay(unsigned int us)
 /*
  * transmit and receive a byte of data to/from the AVR device
  */
-static unsigned char bitbang_txrx(PROGRAMMER * pgm, unsigned char byte)
-{
+static unsigned char bitbang_txrx(const PROGRAMMER *pgm, unsigned char byte) {
   int i;
   unsigned char r, b, rbyte;
 
@@ -176,9 +172,9 @@ static unsigned char bitbang_txrx(PROGRAMMER * pgm, unsigned char byte)
      * one pgm->setpin()-call resp. par clrpin()-call, then
      * - SCK is high for 2T
      * - SCK is low for 2T
-     * - MOSI setuptime is 1T
-     * - MOSI holdtime is 3T
-     * - SCK low to MISO read is 2T to 3T
+     * - SDO setuptime is 1T
+     * - SDO holdtime is 3T
+     * - SCK low to SDI read is 2T to 3T
      * So we are within programming specs (expect for AT90S1200),
      * if and only if T>t_CLCL (t_CLCL=clock period of target system).
      *
@@ -190,7 +186,7 @@ static unsigned char bitbang_txrx(PROGRAMMER * pgm, unsigned char byte)
     b = (byte >> i) & 0x01;
 
     /* set the data input line as desired */
-    pgm->setpin(pgm, PIN_AVR_MOSI, b);
+    pgm->setpin(pgm, PIN_AVR_SDO, b);
 
     pgm->setpin(pgm, PIN_AVR_SCK, 1);
 
@@ -198,7 +194,7 @@ static unsigned char bitbang_txrx(PROGRAMMER * pgm, unsigned char byte)
      * read the result bit (it is either valid from a previous falling
      * edge or it is ignored in the current context)
      */
-    r = pgm->getpin(pgm, PIN_AVR_MISO);
+    r = pgm->getpin(pgm, PIN_AVR_SDI);
 
     pgm->setpin(pgm, PIN_AVR_SCK, 0);
 
@@ -208,25 +204,23 @@ static unsigned char bitbang_txrx(PROGRAMMER * pgm, unsigned char byte)
   return rbyte;
 }
 
-static int bitbang_tpi_clk(PROGRAMMER * pgm) 
-{
+static int bitbang_tpi_clk(const PROGRAMMER *pgm)  {
   unsigned char r = 0;
   pgm->setpin(pgm, PIN_AVR_SCK, 1);
 
-  r = pgm->getpin(pgm, PIN_AVR_MISO);
+  r = pgm->getpin(pgm, PIN_AVR_SDI);
 
   pgm->setpin(pgm, PIN_AVR_SCK, 0);
 
   return r;
 }
 
-void bitbang_tpi_tx(PROGRAMMER * pgm, unsigned char byte) 
-{
+void bitbang_tpi_tx(const PROGRAMMER *pgm, unsigned char byte)  {
   int i;
   unsigned char b, parity;
 
   /* start bit */
-  pgm->setpin(pgm, PIN_AVR_MOSI, 0);
+  pgm->setpin(pgm, PIN_AVR_SDO, 0);
   bitbang_tpi_clk(pgm);
 
   parity = 0;
@@ -235,27 +229,26 @@ void bitbang_tpi_tx(PROGRAMMER * pgm, unsigned char byte)
     parity ^= b;
 
     /* set the data input line as desired */
-    pgm->setpin(pgm, PIN_AVR_MOSI, b);
+    pgm->setpin(pgm, PIN_AVR_SDO, b);
     bitbang_tpi_clk(pgm);
   }
   
   /* parity bit */
-  pgm->setpin(pgm, PIN_AVR_MOSI, parity);
+  pgm->setpin(pgm, PIN_AVR_SDO, parity);
   bitbang_tpi_clk(pgm);
 
   /* 2 stop bits */
-  pgm->setpin(pgm, PIN_AVR_MOSI, 1);
+  pgm->setpin(pgm, PIN_AVR_SDO, 1);
   bitbang_tpi_clk(pgm);
   bitbang_tpi_clk(pgm);
 }
 
-int bitbang_tpi_rx(PROGRAMMER * pgm) 
-{
+int bitbang_tpi_rx(const PROGRAMMER *pgm)  {
   int i;
   unsigned char b, rbyte, parity;
 
   /* make sure pin is on for "pullup" */
-  pgm->setpin(pgm, PIN_AVR_MOSI, 1);
+  pgm->setpin(pgm, PIN_AVR_SDO, 1);
 
   /* wait for start bit (up to 10 bits) */
   b = 1;
@@ -265,7 +258,7 @@ int bitbang_tpi_rx(PROGRAMMER * pgm)
       break;
   }
   if (b != 0) {
-    avrdude_message(MSG_INFO, "bitbang_tpi_rx: start bit not received correctly\n");
+    pmsg_error("start bit not received correctly\n");
     return -1;
   }
 
@@ -280,7 +273,7 @@ int bitbang_tpi_rx(PROGRAMMER * pgm)
 
   /* parity bit */
   if (bitbang_tpi_clk(pgm) != parity) {
-    avrdude_message(MSG_INFO, "bitbang_tpi_rx: parity bit is wrong\n");
+    pmsg_error("parity bit is wrong\n");
     return -1;
   }
 
@@ -289,33 +282,29 @@ int bitbang_tpi_rx(PROGRAMMER * pgm)
   b &= bitbang_tpi_clk(pgm);
   b &= bitbang_tpi_clk(pgm);
   if (b != 1) {
-    avrdude_message(MSG_INFO, "bitbang_tpi_rx: stop bits not received correctly\n");
+    pmsg_error("stop bits not received correctly\n");
     return -1;
   }
   
   return rbyte;
 }
 
-int bitbang_rdy_led(PROGRAMMER * pgm, int value)
-{
+int bitbang_rdy_led(const PROGRAMMER *pgm, int value) {
   pgm->setpin(pgm, PIN_LED_RDY, !value);
   return 0;
 }
 
-int bitbang_err_led(PROGRAMMER * pgm, int value)
-{
+int bitbang_err_led(const PROGRAMMER *pgm, int value) {
   pgm->setpin(pgm, PIN_LED_ERR, !value);
   return 0;
 }
 
-int bitbang_pgm_led(PROGRAMMER * pgm, int value)
-{
+int bitbang_pgm_led(const PROGRAMMER *pgm, int value) {
   pgm->setpin(pgm, PIN_LED_PGM, !value);
   return 0;
 }
 
-int bitbang_vfy_led(PROGRAMMER * pgm, int value)
-{
+int bitbang_vfy_led(const PROGRAMMER *pgm, int value) {
   pgm->setpin(pgm, PIN_LED_VFY, !value);
   return 0;
 }
@@ -325,7 +314,7 @@ int bitbang_vfy_led(PROGRAMMER * pgm, int value)
  * transmit an AVR device command and return the results; 'cmd' and
  * 'res' must point to at least a 4 byte data buffer
  */
-int bitbang_cmd(PROGRAMMER * pgm, const unsigned char *cmd,
+int bitbang_cmd(const PROGRAMMER *pgm, const unsigned char *cmd,
                    unsigned char *res)
 {
   int i;
@@ -336,21 +325,21 @@ int bitbang_cmd(PROGRAMMER * pgm, const unsigned char *cmd,
 
     if(verbose >= 2)
 	{
-        avrdude_message(MSG_NOTICE2, "bitbang_cmd(): [ ");
+        msg_notice2("bitbang_cmd(): [ ");
         for(i = 0; i < 4; i++)
-            avrdude_message(MSG_NOTICE2, "%02X ", cmd[i]);
-        avrdude_message(MSG_NOTICE2, "] [ ");
+            msg_notice2("%02X ", cmd[i]);
+        msg_notice2("] [ ");
         for(i = 0; i < 4; i++)
 		{
-            avrdude_message(MSG_NOTICE2, "%02X ", res[i]);
+            msg_notice2("%02X ", res[i]);
 		}
-        avrdude_message(MSG_NOTICE2, "]\n");
+        msg_notice2("]\n");
 	}
 
   return 0;
 }
 
-int bitbang_cmd_tpi(PROGRAMMER * pgm, const unsigned char *cmd,
+int bitbang_cmd_tpi(const PROGRAMMER *pgm, const unsigned char *cmd,
                        int cmd_len, unsigned char *res, int res_len)
 {
   int i, r;
@@ -371,15 +360,15 @@ int bitbang_cmd_tpi(PROGRAMMER * pgm, const unsigned char *cmd,
 
   if(verbose >= 2)
   {
-    avrdude_message(MSG_NOTICE2, "bitbang_cmd_tpi(): [ ");
+    msg_notice2("bitbang_cmd_tpi(): [ ");
     for(i = 0; i < cmd_len; i++)
-      avrdude_message(MSG_NOTICE2, "%02X ", cmd[i]);
-    avrdude_message(MSG_NOTICE2, "] [ ");
+      msg_notice2("%02X ", cmd[i]);
+    msg_notice2("] [ ");
     for(i = 0; i < res_len; i++)
     {
-      avrdude_message(MSG_NOTICE2, "%02X ", res[i]);
+      msg_notice2("%02X ", res[i]);
     }
-    avrdude_message(MSG_NOTICE2, "]\n");
+    msg_notice2("]\n");
   }
 
   pgm->pgm_led(pgm, OFF);
@@ -392,7 +381,7 @@ int bitbang_cmd_tpi(PROGRAMMER * pgm, const unsigned char *cmd,
  * transmit bytes via SPI and return the results; 'cmd' and
  * 'res' must point to data buffers
  */
-int bitbang_spi(PROGRAMMER * pgm, const unsigned char *cmd,
+int bitbang_spi(const PROGRAMMER *pgm, const unsigned char *cmd,
                    unsigned char *res, int count)
 {
   int i;
@@ -407,15 +396,15 @@ int bitbang_spi(PROGRAMMER * pgm, const unsigned char *cmd,
 
   if(verbose >= 2)
 	{
-        avrdude_message(MSG_NOTICE2, "bitbang_cmd(): [ ");
+        msg_notice2("bitbang_cmd(): [ ");
         for(i = 0; i < count; i++)
-            avrdude_message(MSG_NOTICE2, "%02X ", cmd[i]);
-        avrdude_message(MSG_NOTICE2, "] [ ");
+            msg_notice2("%02X ", cmd[i]);
+        msg_notice2("] [ ");
         for(i = 0; i < count; i++)
 		{
-            avrdude_message(MSG_NOTICE2, "%02X ", res[i]);
+            msg_notice2("%02X ", res[i]);
 		}
-        avrdude_message(MSG_NOTICE2, "]\n");
+        msg_notice2("]\n");
 	}
 
   return 0;
@@ -425,13 +414,12 @@ int bitbang_spi(PROGRAMMER * pgm, const unsigned char *cmd,
 /*
  * issue the 'chip erase' command to the AVR device
  */
-int bitbang_chip_erase(PROGRAMMER * pgm, AVRPART * p)
-{
+int bitbang_chip_erase(const PROGRAMMER *pgm, const AVRPART *p) {
   unsigned char cmd[4];
   unsigned char res[4];
   AVRMEM *mem;
 
-  if (p->flags & AVRPART_HAS_TPI) {
+  if (p->prog_modes & PM_TPI) {
     pgm->pgm_led(pgm, ON);
 
     while (avr_tpi_poll_nvmbsy(pgm));
@@ -443,8 +431,7 @@ int bitbang_chip_erase(PROGRAMMER * pgm, AVRPART * p)
     /* Set Pointer Register */
     mem = avr_locate_mem(p, "flash");
     if (mem == NULL) {
-      avrdude_message(MSG_INFO, "No flash memory to erase for part %s\n",
-          p->desc);
+      pmsg_error("no flash memory to erase for part %s\n", p->desc);
       return -1;
     }
     bitbang_tpi_tx(pgm, TPI_CMD_SSTPR | 0);
@@ -464,8 +451,7 @@ int bitbang_chip_erase(PROGRAMMER * pgm, AVRPART * p)
   }
 
   if (p->op[AVR_OP_CHIP_ERASE] == NULL) {
-    avrdude_message(MSG_INFO, "chip erase instruction not defined for part \"%s\"\n",
-            p->desc);
+    pmsg_error("chip erase instruction not defined for part %s\n", p->desc);
     return -1;
   }
 
@@ -486,13 +472,12 @@ int bitbang_chip_erase(PROGRAMMER * pgm, AVRPART * p)
 /*
  * issue the 'program enable' command to the AVR device
  */
-int bitbang_program_enable(PROGRAMMER * pgm, AVRPART * p)
-{
+int bitbang_program_enable(const PROGRAMMER *pgm, const AVRPART *p) {
   unsigned char cmd[4];
   unsigned char res[4];
   int i;
 
-  if (p->flags & AVRPART_HAS_TPI) {
+  if (p->prog_modes & PM_TPI) {
     /* enable NVM programming */
     bitbang_tpi_tx(pgm, TPI_CMD_SKEY);
     for (i = sizeof(tpi_skey) - 1; i >= 0; i--)
@@ -505,8 +490,7 @@ int bitbang_program_enable(PROGRAMMER * pgm, AVRPART * p)
   }
 
   if (p->op[AVR_OP_PGM_ENABLE] == NULL) {
-    avrdude_message(MSG_INFO, "program enable instruction not defined for part \"%s\"\n",
-            p->desc);
+    pmsg_error("program enable instruction not defined for part %s\n", p->desc);
     return -1;
   }
 
@@ -523,8 +507,7 @@ int bitbang_program_enable(PROGRAMMER * pgm, AVRPART * p)
 /*
  * initialize the AVR device and prepare it to accept commands
  */
-int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
-{
+int bitbang_initialize(const PROGRAMMER *pgm, const AVRPART *p) {
   int rc;
   int tries;
   int i;
@@ -534,12 +517,11 @@ int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
   pgm->powerup(pgm);
   usleep(20000);
 
-  /* TPIDATA is a single line, so MISO & MOSI should be connected */
-  if (p->flags & AVRPART_HAS_TPI) {
+  /* TPIDATA is a single line, so SDI & SDO should be connected */
+  if (p->prog_modes & PM_TPI) {
     /* make sure cmd_tpi() is defined */
     if (pgm->cmd_tpi == NULL) {
-      avrdude_message(MSG_INFO, "%s: Error: %s programmer does not support TPI\n",
-          progname, pgm->type);
+      pmsg_error("%s programmer does not support TPI\n", pgm->type);
       return -1;
     }
 
@@ -550,29 +532,29 @@ int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
     /* RESET must be LOW in case the existing code is driving the TPI pins: */
     pgm->setpin(pgm, PIN_AVR_RESET, 0);
 
-    avrdude_message(MSG_NOTICE2, "doing MOSI-MISO link check\n");
+    msg_notice2("doing SDO-SDI link check\n");
 
-    pgm->setpin(pgm, PIN_AVR_MOSI, 0);
-    if (pgm->getpin(pgm, PIN_AVR_MISO) != 0) {
-      avrdude_message(MSG_INFO, "MOSI->MISO 0 failed\n");
+    pgm->setpin(pgm, PIN_AVR_SDO, 0);
+    if (pgm->getpin(pgm, PIN_AVR_SDI) != 0) {
+      pmsg_error("SDO->SDI 0 failed\n");
       return -1;
     }
-    pgm->setpin(pgm, PIN_AVR_MOSI, 1);
-    if (pgm->getpin(pgm, PIN_AVR_MISO) != 1) {
-      avrdude_message(MSG_INFO, "MOSI->MISO 1 failed\n");
+    pgm->setpin(pgm, PIN_AVR_SDO, 1);
+    if (pgm->getpin(pgm, PIN_AVR_SDI) != 1) {
+      pmsg_error("SDO->SDI 1 failed\n");
       return -1;
     }
 
-    avrdude_message(MSG_NOTICE2, "MOSI-MISO link present\n");
+    msg_notice2("SDO-SDI link present\n");
   }
 
   pgm->setpin(pgm, PIN_AVR_SCK, 0);
   pgm->setpin(pgm, PIN_AVR_RESET, 0);
   usleep(20000);
 
-  if (p->flags & AVRPART_HAS_TPI) {
+  if (p->prog_modes & PM_TPI) {
     /* keep TPIDATA high for 16 clock cycles */
-    pgm->setpin(pgm, PIN_AVR_MOSI, 1);
+    pgm->setpin(pgm, PIN_AVR_SDO, 1);
     for (i = 0; i < 16; i++)
       pgm->highpulsepin(pgm, PIN_AVR_SCK);
 
@@ -584,7 +566,7 @@ int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
     bitbang_tpi_tx(pgm, TPI_CMD_SLDCS | TPI_REG_TPIIR);
     rc = bitbang_tpi_rx(pgm);
     if (rc != 0x80) {
-      avrdude_message(MSG_INFO, "TPIIR not correct\n");
+      pmsg_error("TPIIR not correct\n");
       return -1;
     }
   } else {
@@ -618,7 +600,7 @@ int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
      * can't sync with the device, maybe it's not attached?
      */
     if (rc) {
-      avrdude_message(MSG_INFO, "%s: AVR device not responding\n", progname);
+      pmsg_error("AVR device not responding\n");
       return -1;
     }
   }
@@ -626,11 +608,14 @@ int bitbang_initialize(PROGRAMMER * pgm, AVRPART * p)
   return 0;
 }
 
-static int verify_pin_assigned(PROGRAMMER * pgm, int pin, char * desc)
-{
-  if (pgm->pinno[pin] == 0) {
-    avrdude_message(MSG_INFO, "%s: error: no pin has been assigned for %s\n",
-            progname, desc);
+static int verify_pin_assigned(const PROGRAMMER *pgm, int pinfunc, char *desc) {
+  if(pinfunc < 0 || pinfunc >= N_PINS) {
+    pmsg_error("invalid pin function number %d\n", pinfunc);
+    return -1;
+  }
+
+  if ((pgm->pinno[pinfunc] & PIN_MASK) > PIN_MAX) {
+    pmsg_error("no pin has been assigned for %s\n", desc);
     return -1;
   }
   return 0;
@@ -640,21 +625,19 @@ static int verify_pin_assigned(PROGRAMMER * pgm, int pin, char * desc)
 /*
  * Verify all prerequisites for a bit-bang programmer are present.
  */
-int bitbang_check_prerequisites(PROGRAMMER *pgm)
-{
+int bitbang_check_prerequisites(const PROGRAMMER *pgm) {
 
   if (verify_pin_assigned(pgm, PIN_AVR_RESET, "AVR RESET") < 0)
     return -1;
   if (verify_pin_assigned(pgm, PIN_AVR_SCK,   "AVR SCK") < 0)
     return -1;
-  if (verify_pin_assigned(pgm, PIN_AVR_MISO,  "AVR MISO") < 0)
+  if (verify_pin_assigned(pgm, PIN_AVR_SDI,   "AVR SDI") < 0)
     return -1;
-  if (verify_pin_assigned(pgm, PIN_AVR_MOSI,  "AVR MOSI") < 0)
+  if (verify_pin_assigned(pgm, PIN_AVR_SDO,   "AVR SDO") < 0)
     return -1;
 
   if (pgm->cmd == NULL) {
-    avrdude_message(MSG_INFO, "%s: error: no cmd() method defined for bitbang programmer\n",
-            progname);
+    pmsg_error("no cmd() method defined for bitbang programmer\n");
     return -1;
   }
   return 0;

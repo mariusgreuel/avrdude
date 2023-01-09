@@ -23,7 +23,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT(avrdude, 7.0, avrdude-dev@nongnu.org)
+AC_INIT(avrdude, 7.1-20230108, avrdude-dev@nongnu.org)
 
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
@@ -575,6 +575,12 @@ if test x$have_libhidapi = xyes; then
    echo "DO HAVE    libhidapi"
 else
    echo "DON'T HAVE libhidapi"
+fi
+
+if test x$have_readline = xyes; then
+   echo "DO HAVE    libreadline"
+else
+   echo "DON'T HAVE libreadline"
 fi
 
 if test x$have_pthread = xyes; then

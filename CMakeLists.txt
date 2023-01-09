@@ -20,8 +20,8 @@
 #     cmake -B build
 #     cmake --build build
 
-cmake_minimum_required(VERSION 3.12)
-project(avrdude VERSION 7.0)
+cmake_minimum_required(VERSION 3.14)
+project(avrdude VERSION 7.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
@@ -30,10 +30,17 @@ option(BUILD_DOC "Enable building documents" OFF)
 option(HAVE_LINUXGPIO "Enable Linux sysfs GPIO support" OFF)
 option(HAVE_LINUXSPI "Enable Linux SPI support" OFF)
 option(HAVE_PARPORT "Enable parallel port support" OFF)
-option(USE_EXTERNAL "Use external libraries from AVRDUDE GitHub repositories" OFF)
+option(USE_EXTERNAL_LIBS "Use external libraries from AVRDUDE GitHub repositories" OFF)
 option(USE_LIBUSBWIN32 "Prefer libusb-win32 over libusb" OFF)
 option(DEBUG_CMAKE "Enable debugging output for this CMake project" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
+if(WIN32)
+    # Prefer static libraries over DLLs on Windows
+    option(USE_STATIC_LIBS "Use static libraries" ON)
+else()
+    option(USE_STATIC_LIBS "Use static libraries" OFF)
+endif()
 
 include(CheckIncludeFile)
 include(CheckSymbolExists)
@@ -110,14 +117,14 @@ endif()
 # Detect installed libraries
 # =====================================
 
-# Prefer static libraries over DLLs on Windows
-if(WIN32)
+if(USE_STATIC_LIBS)
     set(PREFERRED_LIBELF libelf.a elf)
     set(PREFERRED_LIBUSB libusb.a usb)
     set(PREFERRED_LIBUSB_1_0 libusb-1.0.a usb-1.0)
     set(PREFERRED_LIBHIDAPI libhidapi.a libhidapi-libusb.a libhidapi-hidraw.a hidapi hidapi-libusb hidapi-hidraw)
     set(PREFERRED_LIBFTDI libftdi.a ftdi)
     set(PREFERRED_LIBFTDI1 libftdi1.a ftdi1)
+    set(PREFERRED_LIBREADLINE libreadline.a)
 else()
     set(PREFERRED_LIBELF elf)
     set(PREFERRED_LIBUSB usb)
@@ -125,6 +132,7 @@ else()
     set(PREFERRED_LIBHIDAPI hidapi hidapi-libusb hidapi-hidraw)
     set(PREFERRED_LIBFTDI ftdi)
     set(PREFERRED_LIBFTDI1 ftdi1)
+    set(PREFERRED_LIBREADLINE readline)
 endif()
 
 # -------------------------------------
@@ -212,16 +220,18 @@ endif()
 # -------------------------------------
 # Find libreadline
 
-find_library(HAVE_LIBREADLINE NAMES readline)
+find_library(HAVE_LIBREADLINE NAMES ${PREFERRED_LIBREADLINE})
 if(HAVE_LIBREADLINE)
     set(LIB_LIBREADLINE ${HAVE_LIBREADLINE})
+elseif(MSVC)
+    set(HAVE_LIBREADLINE 1)
 endif()
 
 # =====================================
 # Use external libraries if requested
 # =====================================
 
-if(USE_EXTERNAL)
+if(USE_EXTERNAL_LIBS)
     FetchContent_Declare(libelf
         GIT_REPOSITORY https://github.com/avrdudes/libelf.git
         GIT_TAG e5a39bf19bd6598c42e09172be5a78ceec2a065c
@@ -234,12 +244,12 @@ if(USE_EXTERNAL)
 
     FetchContent_Declare(libhidapi
         GIT_REPOSITORY https://github.com/avrdudes/libhidapi.git
-        GIT_TAG e3700e951f762ef92871ff4fc94586e4d1c042a6
+        GIT_TAG d1307487973c857bc158e27ecc99644b2f5e68ea
         )
 
     FetchContent_Declare(libftdi
         GIT_REPOSITORY https://github.com/avrdudes/libftdi.git
-        GIT_TAG f3a54da710002a7d25a32a69e667a69ef84cc120
+        GIT_TAG f9fe6e96b97c3a08efd081632c1859cb83aa14e3
         )
 
     message(STATUS "Fetching external libraries, please wait...")
@@ -273,25 +283,8 @@ endif()
 
 add_subdirectory(src)
 
-# =====================================
-# Setup default port names
-# =====================================
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(DEFAULT_PAR_PORT "/dev/parport0")
-    set(DEFAULT_SER_PORT "/dev/ttyS0")
-elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-    set(DEFAULT_PAR_PORT "/dev/ppi0")
-    set(DEFAULT_SER_PORT "/dev/cuad0")
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Solaris")
-    set(DEFAULT_PAR_PORT "/dev/printers/0")
-    set(DEFAULT_SER_PORT "/dev/term/a")
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(DEFAULT_PAR_PORT "lpt1")
-    set(DEFAULT_SER_PORT "com1")
-else()
-    set(DEFAULT_PAR_PORT "unknown")
-    set(DEFAULT_SER_PORT "unknown")
+if(BUILD_DOC)
+    add_subdirectory(src/doc)
 endif()
 
 # =====================================
@@ -308,7 +301,7 @@ if (DEBUG_CMAKE)
     message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
     message(STATUS "CONFIG_DIR: ${CONFIG_DIR}")
     message(STATUS "AVRDUDE_FULL_VERSION: ${AVRDUDE_FULL_VERSION}")
-    message(STATUS "USE_EXTERNAL: ${USE_EXTERNAL}")
+    message(STATUS "USE_EXTERNAL_LIBS: ${USE_EXTERNAL_LIBS}")
     message(STATUS "USE_LIBUSBWIN32: ${USE_LIBUSBWIN32}")
     message(STATUS "HAVE_LIBELF: ${HAVE_LIBELF}")
     message(STATUS "HAVE_LIBUSB: ${HAVE_LIBUSB}")
@@ -368,6 +361,12 @@ if(HAVE_LIBFTDI1)
     message(STATUS "DO HAVE    libftdi1")
 else()
     message(STATUS "DON'T HAVE libftdi1")
+endif()
+
+if(HAVE_LIBREADLINE)
+    message(STATUS "DO HAVE    libreadline")
+else()
+    message(STATUS "DON'T HAVE libreadline")
 endif()
 
 if(BUILD_DOC)

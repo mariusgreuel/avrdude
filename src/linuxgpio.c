@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "avrdude.h"
 #include "libavrdude.h"
@@ -46,10 +47,8 @@
 
 /*
  * GPIO user space helpers
- * The following functions are acting on an "unsigned gpio" argument, which corresponds to the 
- * gpio numbering scheme in the kernel (starting from 0).  
- * The higher level functions use "int pin" to specify the pins with an offset of 1:
- * gpio = pin - 1;
+ * The following functions are acting on an "unsigned gpio" argument, which corresponds to the
+ * gpio numbering scheme in the kernel (starting from 0).
  */
 
 #define GPIO_DIR_IN	0
@@ -62,7 +61,7 @@ static int linuxgpio_export(unsigned int gpio)
 
   fd = open("/sys/class/gpio/export", O_WRONLY);
   if (fd < 0) {
-    perror("Can't open /sys/class/gpio/export");
+    pmsg_ext_error("cannot open /sys/class/gpio/export: %s\n", strerror(errno));
     return fd;
   }
 
@@ -80,7 +79,7 @@ static int linuxgpio_unexport(unsigned int gpio)
 
   fd = open("/sys/class/gpio/unexport", O_WRONLY);
   if (fd < 0) {
-    perror("Can't open /sys/class/gpio/unexport");
+    pmsg_ext_error("cannot open /sys/class/gpio/unexport: %s\n", strerror(errno));
     return fd;
   }
 
@@ -108,7 +107,7 @@ static int linuxgpio_dir(unsigned int gpio, unsigned int dir)
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    perror("Can't open gpioX/direction");
+    pmsg_ext_error("cannot open %s: %s\n", buf, strerror(errno));
     return fd;
   }
 
@@ -138,32 +137,31 @@ static int linuxgpio_dir_in(unsigned int gpio)
 
 #define N_GPIO (PIN_MAX + 1)
 
+/* Delay between checks for successful GPIO export (100ms) */
+#define GPIO_SYSFS_OPEN_DELAY      100000
+/* Number of retries to check for successful GPIO exports */
+#define GPIO_SYSFS_OPEN_RETRIES    10
+
 /*
 * an array which holds open FDs to /sys/class/gpio/gpioXX/value for all needed pins
 */
 static int linuxgpio_fds[N_GPIO] ;
 
 
-static int linuxgpio_setpin(PROGRAMMER * pgm, int pinfunc, int value)
-{
-  int r;
-  int pin = pgm->pinno[pinfunc]; // TODO
-
-  if (pin & PIN_INVERSE)
-  {
-    value  = !value;
-    pin   &= PIN_MASK;
-  }
-
-  if ( linuxgpio_fds[pin] < 0 )
+static int linuxgpio_setpin(const PROGRAMMER *pgm, int pinfunc, int value) {
+  if(pinfunc < 0 || pinfunc >= N_PINS)
     return -1;
 
-  if (value)
-    r = write(linuxgpio_fds[pin], "1", 1);
-  else
-    r = write(linuxgpio_fds[pin], "0", 1);
+  unsigned pin = pgm->pinno[pinfunc];
+  if (pin & PIN_INVERSE)
+    value = !value;
+  pin &= PIN_MASK;
 
-  if (r!=1) return -1;
+  if (pin > PIN_MAX || linuxgpio_fds[pin] < 0)
+    return -1;
+
+  if (write(linuxgpio_fds[pin], value? "1": "0", 1) != 1)
+    return -1;
 
   if (pgm->ispdelay > 1)
     bitbang_delay(pgm->ispdelay);
@@ -171,41 +169,34 @@ static int linuxgpio_setpin(PROGRAMMER * pgm, int pinfunc, int value)
   return 0;
 }
 
-static int linuxgpio_getpin(PROGRAMMER * pgm, int pinfunc)
-{
-  unsigned char invert=0;
+static int linuxgpio_getpin(const PROGRAMMER *pgm, int pinfunc) {
+  if(pinfunc < 0 || pinfunc >= N_PINS)
+    return -1;
+
+  unsigned int pin = pgm->pinno[pinfunc];
+  int invert = !!(pin & PIN_INVERSE);
+  pin &= PIN_MASK;
+
+  if(pin > PIN_MAX || linuxgpio_fds[pin] < 0)
+    return -1;
+
+  if(lseek(linuxgpio_fds[pin], 0, SEEK_SET) < 0)
+    return -1;
+
   char c;
-  int pin = pgm->pinno[pinfunc]; // TODO
-
-  if (pin & PIN_INVERSE)
-  {
-    invert = 1;
-    pin   &= PIN_MASK;
-  }
-
-  if ( linuxgpio_fds[pin] < 0 )
+  if(read(linuxgpio_fds[pin], &c, 1) != 1)
     return -1;
 
-  if (lseek(linuxgpio_fds[pin], 0, SEEK_SET)<0)
-    return -1;
-
-  if (read(linuxgpio_fds[pin], &c, 1)!=1)
-    return -1;
-
-  if (c=='0')
-    return 0+invert;
-  else if (c=='1')
-    return 1-invert;
-  else
-    return -1;
-
+  return c=='0'? 0+invert: c=='1'? 1-invert: -1;
 }
 
-static int linuxgpio_highpulsepin(PROGRAMMER * pgm, int pinfunc)
-{
-  int pin = pgm->pinno[pinfunc]; // TODO
-  
-  if ( linuxgpio_fds[pin & PIN_MASK] < 0 )
+static int linuxgpio_highpulsepin(const PROGRAMMER *pgm, int pinfunc) {
+  if(pinfunc < 0 || pinfunc >= N_PINS)
+    return -1;
+
+  unsigned int pin = pgm->pinno[pinfunc] & PIN_MASK;
+
+  if (pin > PIN_MAX || linuxgpio_fds[pin] < 0 )
     return -1;
 
   linuxgpio_setpin(pgm, pinfunc, 1);
@@ -216,35 +207,31 @@ static int linuxgpio_highpulsepin(PROGRAMMER * pgm, int pinfunc)
 
 
 
-static void linuxgpio_display(PROGRAMMER *pgm, const char *p)
-{
-    avrdude_message(MSG_INFO, "%sPin assignment  : /sys/class/gpio/gpio{n}\n",p);
+static void linuxgpio_display(const PROGRAMMER *pgm, const char *p) {
+    msg_info("%sPin assignment  : /sys/class/gpio/gpio{n}\n",p);
     pgm_display_generic_mask(pgm, p, SHOW_AVR_PINS);
 }
 
-static void linuxgpio_enable(PROGRAMMER *pgm)
-{
+static void linuxgpio_enable(PROGRAMMER *pgm, const AVRPART *p) {
   /* nothing */
 }
 
-static void linuxgpio_disable(PROGRAMMER *pgm)
-{
+static void linuxgpio_disable(const PROGRAMMER *pgm) {
   /* nothing */
 }
 
-static void linuxgpio_powerup(PROGRAMMER *pgm)
-{
+static void linuxgpio_powerup(const PROGRAMMER *pgm) {
   /* nothing */
 }
 
-static void linuxgpio_powerdown(PROGRAMMER *pgm)
-{
+static void linuxgpio_powerdown(const PROGRAMMER *pgm) {
   /* nothing */
 }
 
-static int linuxgpio_open(PROGRAMMER *pgm, char *port)
-{
+static int linuxgpio_open(PROGRAMMER *pgm, const char *port) {
   int r, i, pin;
+  char gpio_path[60];
+  struct stat stat_buf;
 
   if (bitbang_check_prerequisites(pgm) < 0)
     return -1;
@@ -252,33 +239,58 @@ static int linuxgpio_open(PROGRAMMER *pgm, char *port)
 
   for (i=0; i<N_GPIO; i++)
     linuxgpio_fds[i] = -1;
-  //Avrdude assumes that if a pin number is 0 it means not used/available
-  //this causes a problem because 0 is a valid GPIO number in Linux sysfs.
-  //To avoid annoying off by one pin numbering we assume SCK, MOSI, MISO 
-  //and RESET pins are always defined in avrdude.conf, even as 0. If they're
-  //not programming will not work anyway. The drawbacks of this approach are
-  //that unwanted toggling of GPIO0 can occur and that other optional pins
-  //mostry LED status, can't be set to GPIO0. It can be fixed when a better 
-  //solution exists.
-  for (i=0; i<N_PINS; i++) {
-    if ( (pgm->pinno[i] & PIN_MASK) != 0 ||
-         i == PIN_AVR_RESET ||
-         i == PIN_AVR_SCK   ||
-         i == PIN_AVR_MOSI  ||
-         i == PIN_AVR_MISO ) {
+  // Avrdude assumes that if a pin number is invalid it means not used/available
+  for (i = 1; i < N_PINS; i++) { // The pin enumeration in libavrdude.h starts with PPI_AVR_VCC = 1
+    if ((pgm->pinno[i] & PIN_MASK) <= PIN_MAX) {
         pin = pgm->pinno[i] & PIN_MASK;
         if ((r=linuxgpio_export(pin)) < 0) {
-            avrdude_message(MSG_INFO, "Can't export GPIO %d, already exported/busy?: %s",
+            pmsg_ext_error("cannot export GPIO %d, already exported/busy?: %s",
                     pin, strerror(errno));
             return r;
         }
-        if (i == PIN_AVR_MISO)
-            r=linuxgpio_dir_in(pin);
-        else
-            r=linuxgpio_dir_out(pin);
 
-        if (r < 0)
+        /* Wait until GPIO directory appears */
+        snprintf(gpio_path, sizeof(gpio_path), "/sys/class/gpio/gpio%u", pin);
+        unsigned int retry_count;
+        for (retry_count = 0; retry_count < GPIO_SYSFS_OPEN_RETRIES; retry_count++) {
+            int ret = stat(gpio_path, &stat_buf);
+            if (ret == 0) {
+                break;
+            } else if (ret < 0 && errno != ENOENT) {
+                linuxgpio_unexport(pin);
+                return ret;
+            }
+
+            usleep(GPIO_SYSFS_OPEN_DELAY);
+        }
+
+        /* Write direction, looping in case of EACCES errors due to delayed
+         * udev permission rule application after export */
+        for (retry_count = 0; retry_count < GPIO_SYSFS_OPEN_RETRIES; retry_count++) {
+            usleep(GPIO_SYSFS_OPEN_DELAY);
+            if (i == PIN_AVR_SDI)
+                r=linuxgpio_dir_in(pin);
+            else
+                r=linuxgpio_dir_out(pin);
+
+            if (r >= 0)
+                break;
+
+            if (errno != EACCES) {
+                linuxgpio_unexport(pin);
+                return r;
+            }
+        }
+
+        if (retry_count)
+            pmsg_notice2("needed %d retr%s for linuxgpio_dir_%s(%s)\n",
+              retry_count, retry_count > 1? "ies": "y",
+              i == PIN_AVR_SDI? "in": "out", avr_pin_name(pin));
+
+        if (r < 0) {
+            linuxgpio_unexport(pin);
             return r;
+        }
 
         if ((linuxgpio_fds[pin]=linuxgpio_openfd(pin)) < 0)
             return linuxgpio_fds[pin];
@@ -299,20 +311,21 @@ static void linuxgpio_close(PROGRAMMER *pgm)
   for (i=0; i<N_GPIO; i++) {
     if (linuxgpio_fds[i] >= 0 && i != reset_pin) {
        close(linuxgpio_fds[i]);
+       linuxgpio_fds[i] = -1;
        linuxgpio_dir_in(i);
        linuxgpio_unexport(i);
     }
   }
   //configure RESET as input, if there's external pull up it will go high
-  if (linuxgpio_fds[reset_pin] >= 0) {
+  if(reset_pin <= PIN_MAX && linuxgpio_fds[reset_pin] >= 0) {
     close(linuxgpio_fds[reset_pin]);
+    linuxgpio_fds[reset_pin] = -1;
     linuxgpio_dir_in(reset_pin);
     linuxgpio_unexport(reset_pin);
   }
 }
 
-void linuxgpio_initpgm(PROGRAMMER *pgm)
-{
+void linuxgpio_initpgm(PROGRAMMER *pgm) {
   strcpy(pgm->type, "linuxgpio");
 
   pgm_fill_old_pins(pgm); // TODO to be removed if old pin data no longer needed
@@ -344,10 +357,8 @@ const char linuxgpio_desc[] = "GPIO bitbanging using the Linux sysfs interface";
 
 #else  /* !HAVE_LINUXGPIO */
 
-void linuxgpio_initpgm(PROGRAMMER * pgm)
-{
-  avrdude_message(MSG_INFO, "%s: Linux sysfs GPIO support not available in this configuration\n",
-                  progname);
+void linuxgpio_initpgm(PROGRAMMER *pgm) {
+  pmsg_error("Linux sysfs GPIO support not available in this configuration\n");
 }
 
 const char linuxgpio_desc[] = "GPIO bitbanging using the Linux sysfs interface (not available)";

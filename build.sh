@@ -29,7 +29,12 @@ ostype=$(uname | tr '[A-Z]' '[a-z]')
 build_type=RelWithDebInfo
 # build_type=Release # no debug info
 
+# See CMakeLists.txt for all options
+#
+# Use this to enable (historical) parallel-port based programmers:
+#extra_enable="-D HAVE_PARPORT=1"
 extra_enable=""
+
 build_flags=""
 
 case "${ostype}" in
@@ -37,9 +42,9 @@ case "${ostype}" in
 	# try to find out whether this is an Embedded Linux
 	# platform (e.g. Raspberry Pi)
 	machine=$(uname -m)
-	if expr "${machine}" : 'arm' >/dev/null
+	if expr "${machine}" : '^\(arm\|aarch\)' >/dev/null
 	then
-	    extra_enable="${extra_enable} -D HAVE_LINUXGPIO=ON -D HAVE_LINUXSPI=ON"
+	    extra_enable="${extra_enable} -D HAVE_LINUXGPIO=1 -D HAVE_LINUXSPI=1"
 	fi
 	;;
 
@@ -50,11 +55,21 @@ case "${ostype}" in
 	then
 	    build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/opt/local/include -D CMAKE_EXE_LINKER_FLAGS=-L/opt/local/lib"
 	else
-	    build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/usr/local/include -D CMAKE_EXE_LINKER_FLAGS=-L/usr/local/Cellar"
+            # Apple M1 (may be new version of homebrew also)
+            if [ -d /opt/homebrew ]
+            then
+                build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/opt/homebrew/include -D CMAKE_EXE_LINKER_FLAGS=-L/opt/homebrew/Cellar"
+            else
+                build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/usr/local/include -D CMAKE_EXE_LINKER_FLAGS=-L/usr/local/Cellar"
+            fi
 	fi
 	;;
 
-    freebsd)
+    netbsd)
+	build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/usr/pkg/include -D CMAKE_EXE_LINKER_FLAGS=-R/usr/pkg/lib -D CMAKE_INSTALL_PREFIX:PATH=/usr/pkg"
+	;;
+
+    *bsd)
 	build_flags="${build_flags} -D CMAKE_C_FLAGS=-I/usr/local/include -D CMAKE_EXE_LINKER_FLAGS=-L/usr/local/lib"
 	;;
 esac

@@ -1,3 +1,4 @@
+
 #
 # avrdude - A Downloader/Uploader for AVR device programmers
 # Copyright (C) 2003, 2004  Theodore A. Roth  <troth@openavr.org>
@@ -92,6 +93,7 @@ libavrdude_a_SOURCES = \
 	avr.c \
 	avr910.c \
 	avr910.h \
+	avrcache.c \
 	avrdude.h \
 	avrftdi.c \
 	avrftdi.h \
@@ -179,6 +181,10 @@ libavrdude_a_SOURCES = \
 	updi_readwrite.h \
 	updi_nvm.c \
 	updi_nvm.h \
+	urclock.c \
+	urclock.h \
+	urclock_hash.h \
+	urclock_private.h \
 	usbdevs.h \
 	usb_hidapi.c \
 	usb_libusb.c \
@@ -198,6 +204,11 @@ avrdude_SOURCES = \
 	main.c \
 	whereami.c \
 	whereami.h \
+	avrintel.c \
+	avrintel.h \
+	developer_opts.c \
+	developer_opts.h \
+	developer_opts_private.h \
 	term.c \
 	term.h
 
