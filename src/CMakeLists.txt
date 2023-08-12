@@ -168,6 +168,8 @@ add_library(libavrdude
     freebsd_ppi.h
     ft245r.c
     ft245r.h
+    ispv2renew.h
+    ispv2renew.c
     jtagmkI.c
     jtagmkI.h
     jtagmkI_private.h
@@ -184,6 +186,8 @@ add_library(libavrdude
     linuxspi.h
     linux_ppdev.h
     lists.c
+    mcupro.h
+    mcupro.c
     micronucleus.c
     micronucleus.h
     par.c
@@ -231,6 +235,8 @@ add_library(libavrdude
     urclock_private.h
     usbasp.c
     usbasp.h
+    usbisp3.h
+    usbisp3.c
     usbdevs.h
     usb_hidapi.c
     usb_libusb.c
