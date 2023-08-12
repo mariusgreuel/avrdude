@@ -2483,6 +2483,42 @@ programmer
 ;
 
 #------------------------------------------------------------
+# usbisp3
+#------------------------------------------------------------
+
+programmer
+    id                     = "usbisp3";
+    desc                   = "USB ISP 3.0 by Ngo Hung Cuong";
+    type                   = "usbisp3";
+    prog_modes             = PM_ISP;
+    connection_type        = usb;
+;
+
+#------------------------------------------------------------
+# ispv2renew
+#------------------------------------------------------------
+
+programmer
+    id                     = "ispv2renew";
+    desc                   = "ISP v2 Renew by Ngo Hung Cuong";
+    type                   = "ispv2renew";
+    prog_modes             = PM_ISP;
+    connection_type        = usb;
+;
+
+#------------------------------------------------------------
+# mcupro
+#------------------------------------------------------------
+
+programmer
+    id                     = "mcupro";
+    desc                   = "MCU Pro by Ngo Hung Cuong";
+    type                   = "mcupro";
+    prog_modes             = PM_ISP;
+    connection_type        = usb;
+;
+
+#------------------------------------------------------------
 # flip1
 #------------------------------------------------------------
 
